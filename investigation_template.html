@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SARA.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<style>
+  :root{
+    --ink:#0f1524; --ink-soft:#37415a;
+    --paper:#eef1f7; --panel:#ffffff; --panel-2:#f8f9fc; --line:#e2e5ee; --line-strong:#c9cedb;
+    --muted:#6b7280;
+    --navy:#141c33; --navy2:#1f2b4d; --navy3:#2d3e6b;
+    --accent:#4f6bff; --accent-bg:#eef1ff; --accent-soft:#dde3ff;
+    --teal:#0b8f70; --teal-bg:#e2f6ef;
+    --amber:#a3620a; --amber-bg:#fdf1de;
+    --red:#c22e3d; --red-bg:#fdecee;
+    --purple:#7c3aed; --purple-bg:#f1e9ff;
+    --crypto:#c2760a; --crypto-bg:#fdf1de;
+    --mono:'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --shadow-sm: 0 1px 2px rgba(15,21,36,.06);
+    --shadow-md: 0 4px 14px rgba(15,21,36,.08);
+    --shadow-lg: 0 12px 32px rgba(15,21,36,.14);
+    --radius: 12px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+  header{
+    background:#ffffff; color:var(--ink); padding:0 28px;
+    display:flex;align-items:center;justify-content:space-between;
+    height:66px; position:sticky; top:0; z-index:20;
+    border-bottom:1px solid var(--line); box-shadow:0 1px 3px rgba(15,21,36,.05);
+  }
+  header .brand{display:flex;align-items:center;gap:13px;}
+  header .logo{
+    width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--navy3));
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;
+    box-shadow:0 3px 10px rgba(20,28,51,.28); letter-spacing:-.5px;
+  }
+  header .brand-text{display:flex;flex-direction:column;}
+  header h1{font-size:23px;font-weight:800;margin:0;letter-spacing:-.5px;line-height:1;color:var(--navy);}
+  header h1 .dot-ai{color:var(--accent);}
+  header .tag{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-top:3px;}
+  header .header-nav{display:flex;gap:6px;position:absolute;left:50%;transform:translateX(-50%);}
+  header .header-right{display:flex;align-items:center;gap:12px;}
+  .icon-btn{position:relative;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);
+    font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);}
+  .icon-btn:hover{background:#eef1f7;}
+  .notif-dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid #fff;}
+  .inv-back{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-soft);font-size:12.5px;font-weight:700;
+    padding:9px 14px;border-radius:9px;cursor:pointer;}
+  .inv-back:hover{background:#eef1f7;color:var(--accent);}
+  .stat-strip{display:none;}
+  /* ---- header nav tabs + user chip ---- */
+  .tabbar{display:flex;gap:6px;}
+  .tab-btn{background:var(--panel-2);border:1px solid var(--line);color:var(--ink-soft);font-size:13px;font-weight:700;
+    padding:9px 18px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+  .tab-btn:hover{background:#eef1f7;color:var(--accent);}
+  .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 9px rgba(79,107,255,.4);}
+  .user-chip{display:flex;align-items:center;gap:11px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:24px;padding:5px 6px 5px 15px;}
+  .user-chip .who{display:flex;flex-direction:column;line-height:1.15;}
+  .user-chip .who-label{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:800;}
+  .user-role{font-size:13px;font-weight:800;color:var(--navy);letter-spacing:.01em;}
+  .logout-btn{background:#fff;border:1px solid var(--line-strong);color:var(--ink-soft);font-size:11.5px;font-weight:700;
+    padding:7px 13px;border-radius:20px;cursor:pointer;transition:all .15s;}
+  .logout-btn:hover{background:var(--red,#c22e3d);border-color:var(--red,#c22e3d);color:#fff;}
+
+  /* ================= DASHBOARD ================= */
+  .dash-view{background:var(--paper);min-height:calc(100vh - 66px);}
+  .dash-inner{max-width:1440px;margin:0 auto;padding:28px 32px 60px;}
+  .dash-welcome{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:24px;flex-wrap:wrap;}
+  .dash-hello{font-size:14px;color:var(--muted);font-weight:600;}
+  .dash-user{font-size:30px;font-weight:800;color:var(--navy);letter-spacing:-.6px;line-height:1.1;}
+  .dash-userrole{font-size:13px;color:var(--accent);font-weight:700;margin-top:2px;}
+  .dash-kpis{display:flex;gap:12px;flex-wrap:wrap;}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 20px;min-width:112px;box-shadow:var(--shadow-sm);}
+  .kpi-val{font-size:26px;font-weight:800;color:var(--navy);line-height:1;}
+  .kpi-lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-top:6px;}
+  .kpi.crit .kpi-val{color:var(--red);} .kpi.warn .kpi-val{color:var(--amber);} .kpi.ok .kpi-val{color:var(--teal);}
+  .dash-panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden;}
+  .dash-panel-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);}
+  .dash-panel-title{font-size:17px;font-weight:800;color:var(--navy);}
+  .dash-count{display:inline-block;background:var(--accent-bg);color:var(--accent);font-size:13px;font-weight:800;
+    padding:2px 11px;border-radius:12px;margin-left:8px;}
+  .dash-view-toggle{display:flex;gap:4px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px;}
+  .dvt-btn{background:transparent;border:none;font-size:12px;font-weight:700;color:var(--muted);padding:6px 12px;border-radius:7px;cursor:pointer;}
+  .dvt-btn.active{background:#fff;color:var(--accent);box-shadow:var(--shadow-sm);}
+  .dash-controls{display:flex;gap:10px;padding:16px 22px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--panel-2);}
+  .dash-search{flex:1;min-width:240px;position:relative;}
+  .dash-search input{width:100%;padding:10px 14px;border:1px solid var(--line-strong);border-radius:9px;font-size:13.5px;outline:none;background:#fff;}
+  .dash-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+  .dash-filter{padding:10px 12px;border:1px solid var(--line-strong);border-radius:9px;font-size:13px;background:#fff;color:var(--ink-soft);cursor:pointer;outline:none;font-weight:600;}
+  .dash-filter:focus{border-color:var(--accent);}
+  .dash-table{width:100%;border-collapse:collapse;}
+  .dash-table th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    font-weight:800;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel-2);white-space:nowrap;}
+  .dash-table td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-soft);vertical-align:middle;}
+  .dash-table tr{cursor:pointer;transition:background .12s;}
+  .dash-table tbody tr:hover{background:var(--accent-bg);}
+  .dash-aid{font-weight:800;color:var(--accent);font-family:var(--mono);font-size:12px;}
+  .dash-cust{font-weight:700;color:var(--navy);}
+  .dash-cust-sub{font-size:11px;color:var(--muted);}
+  .dash-score{font-weight:800;font-size:14px;}
+  .dash-scorebar{width:44px;height:5px;border-radius:3px;background:var(--line);margin-top:3px;overflow:hidden;}
+  .dash-scorebar i{display:block;height:100%;border-radius:3px;}
+  .pill{display:inline-block;font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:11px;white-space:nowrap;letter-spacing:.02em;}
+  .pill-crit{background:var(--red-bg);color:var(--red);} .pill-high{background:#fde2e4;color:#c0392b;}
+  .pill-medium{background:var(--amber-bg);color:var(--amber);} .pill-low{background:var(--teal-bg);color:var(--teal);}
+  .pill-risk-high{background:var(--red-bg);color:var(--red);} .pill-risk-medium{background:var(--amber-bg);color:var(--amber);} .pill-risk-low{background:var(--teal-bg);color:var(--teal);}
+  .pill-status{background:var(--accent-bg);color:var(--accent);}
+  .pill-sla-ok{background:var(--teal-bg);color:var(--teal);} .pill-sla-warn{background:var(--amber-bg);color:var(--amber);} .pill-sla-breach{background:var(--red-bg);color:var(--red);}
+  .dash-open-ic{color:var(--line-strong);font-weight:800;}
+  .dash-table tr:hover .dash-open-ic{color:var(--accent);}
+  .dash-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;padding:18px 22px;}
+  .acard{border:1px solid var(--line);border-radius:13px;padding:16px 17px;cursor:pointer;transition:all .15s;background:#fff;position:relative;}
+  .acard:hover{border-color:var(--accent);box-shadow:0 6px 18px rgba(79,107,255,.14);transform:translateY(-1px);}
+  .acard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .acard-aid{font-family:var(--mono);font-size:11.5px;font-weight:800;color:var(--accent);}
+  .acard-name{font-size:16px;font-weight:800;color:var(--navy);margin-top:3px;}
+  .acard-sub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .acard-scorebox{text-align:center;}
+  .acard-score{font-size:24px;font-weight:800;line-height:1;}
+  .acard-scorelbl{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800;}
+  .acard-scenario{font-size:12px;color:var(--ink-soft);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:10px 0;line-height:1.4;}
+  .acard-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+  .acard-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;font-size:11px;color:var(--muted);}
+  .dash-pagination{display:flex;justify-content:center;align-items:center;gap:6px;padding:16px;}
+  .pg-btn{min-width:34px;height:34px;border:1px solid var(--line-strong);background:#fff;border-radius:8px;font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;padding:0 10px;}
+  .pg-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+  .pg-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .pg-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .dash-empty{padding:44px;text-align:center;color:var(--muted);font-size:14px;}
+
+  /* ================= INVESTIGATION WORKSPACE ================= */
+  .inv-shell{display:grid;grid-template-columns:264px 1fr;height:calc(100vh - 66px);}
+  .inv-nav{background:#fff;border-right:1px solid var(--line);overflow-y:auto;position:relative;transition:width .18s;display:flex;flex-direction:column;}
+  .inv-nav-toggle{position:absolute;top:12px;right:10px;width:24px;height:24px;border-radius:7px;border:1px solid var(--line);
+    background:var(--panel-2);cursor:pointer;font-size:14px;color:var(--muted);line-height:1;z-index:2;}
+  .inv-nav-casehdr{padding:18px 18px 14px;border-bottom:1px solid var(--line);}
+  .inv-nav-casehdr .cn{font-size:15px;font-weight:800;color:var(--navy);line-height:1.2;}
+  .inv-nav-casehdr .ci{font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:3px;}
+  .inv-nav-casehdr .cflags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+  .inv-nav-list{padding:10px 10px 30px;flex:1;}
+  .inv-nav-group{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;padding:14px 10px 6px;}
+  .inv-nav-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:13px;
+    color:var(--ink-soft);font-weight:600;margin-bottom:1px;border:1px solid transparent;transition:all .12s;white-space:nowrap;}
+  .inv-nav-item:hover{background:var(--panel-2);}
+  .inv-nav-item.active{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-soft);font-weight:800;}
+  .inv-nav-item .ic{width:19px;text-align:center;font-size:14px;flex-shrink:0;}
+  .inv-nav-item .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;}
+  .inv-nav-item .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;}
+  .inv-nav-item .dot.warn{background:var(--amber);}
+  .inv-nav.collapsed{width:60px;}
+  .inv-nav.collapsed .inv-nav-casehdr,.inv-nav.collapsed .inv-nav-group,.inv-nav.collapsed .lbl{display:none;}
+  .inv-nav.collapsed .inv-nav-item{justify-content:center;padding:11px 0;}
+  .inv-nav.collapsed .inv-nav-toggle{transform:rotate(180deg);}
+  .inv-content{overflow-y:auto;display:flex;flex-direction:column;background:var(--paper);}
+  .inv-content-bar{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);
+    padding:15px 30px;display:flex;align-items:center;justify-content:space-between;gap:14px;z-index:5;}
+  .inv-cb-title{font-size:18px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:10px;}
+  .inv-cb-sub{font-size:11.5px;color:var(--muted);margin-top:1px;font-weight:600;}
+  .inv-cb-nav{display:flex;gap:8px;}
+  .inv-cb-nav button{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 13px;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .inv-cb-nav button:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+  .inv-cb-nav button:disabled{opacity:.4;cursor:not-allowed;}
+  main#mainPanel{overflow-y:visible;padding:24px 30px 70px;}
+  .sec-pane{animation:fadeIn .2s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  @media (max-width:1080px){
+    .inv-shell{grid-template-columns:60px 1fr;}
+    .inv-nav .inv-nav-casehdr,.inv-nav .inv-nav-group,.inv-nav .lbl{display:none;}
+    .inv-nav .inv-nav-item{justify-content:center;padding:11px 0;}
+    .inv-nav.expanded{position:fixed;left:0;top:66px;bottom:0;width:264px;z-index:30;box-shadow:var(--shadow-lg);}
+    .inv-nav.expanded .inv-nav-casehdr,.inv-nav.expanded .inv-nav-group,.inv-nav.expanded .lbl{display:block;}
+    .inv-nav.expanded .inv-nav-item{justify-content:flex-start;padding:9px 11px;}
+    header .header-nav{display:none;}
+  }
+
+  .layout{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 68px);}
+  .queue{border-right:1px solid var(--line);overflow-y:auto;background:var(--panel);display:flex;flex-direction:column;}
+  .queue-controls{padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);z-index:2;}
+  .search-box{position:relative;margin-bottom:10px;}
+  .search-box input{
+    width:100%;padding:9px 12px 9px 32px;border:1px solid var(--line-strong);border-radius:8px;font-size:13px;
+    font-family:var(--sans);background:var(--panel-2);
+  }
+  .search-box input:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);}
+  .search-box::before{content:'⌕';position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+  .filter-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+  .filter-btn{
+    font-size:11px;font-family:var(--mono);padding:5px 10px;border-radius:16px;border:1px solid var(--line-strong);
+    background:#fff;cursor:pointer;color:var(--ink-soft);transition:.12s;
+  }
+  .filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .risk-filter-btn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.3;}
+  .risk-filter-btn .rf-label{text-transform:capitalize;font-weight:700;}
+  .risk-filter-btn .rf-range{font-size:9px;font-weight:500;color:var(--muted);}
+  .risk-filter-btn.active .rf-range{color:#c7d0f5;}
+  .channel-dropdown{position:relative;margin-bottom:8px;}
+  .channel-toggle{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;}
+  .channel-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--line-strong);
+    border-radius:8px;box-shadow:var(--shadow-md);padding:8px 10px;z-index:10;}
+  .channel-menu-item{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:5px 2px;cursor:pointer;color:var(--ink-soft);}
+  .channel-menu-item input{margin:0;}
+  .rule-chip-filters{display:flex;gap:5px;flex-wrap:wrap;max-height:96px;overflow-y:auto;padding-right:2px;}
+  .rule-chip-filters::-webkit-scrollbar{width:5px;}
+  .rule-chip-filters::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px;}
+  .rule-chip{
+    font-size:10px;font-family:var(--mono);padding:4px 8px;border-radius:5px;border:1px solid var(--line-strong);
+    background:#fff;cursor:pointer;color:var(--muted);transition:.12s;
+  }
+  .rule-chip.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .queue-head{padding:10px 16px 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;}
+  .qlist{flex:1;overflow-y:auto;}
+  .qitem{padding:13px 16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s;position:relative;}
+  .qitem:hover{background:var(--panel-2);}
+  .qitem.active{background:var(--accent-bg);}
+  .qitem.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);}
+  .qitem.decided{opacity:.48;}
+  .qitem-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .qitem-id{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .qitem-name{font-size:14px;font-weight:700;margin-top:3px;color:var(--ink);}
+  .qitem-badges{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
+  .mini-badge{font-size:9.5px;font-family:var(--mono);padding:2px 6px;border-radius:4px;background:var(--panel-2);color:var(--muted);border:1px solid var(--line);}
+  .mini-badge.crypto{background:var(--crypto-bg);color:var(--crypto);border-color:#f1d6a3;}
+  .qitem-rules{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .score-pill{font-family:var(--mono);font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:20px;}
+  .lvl-High{background:var(--red-bg);color:var(--red);}
+  .lvl-Medium-High{background:var(--amber-bg);color:var(--amber);}
+  .lvl-Medium{background:var(--amber-bg);color:var(--amber);}
+  .lvl-Low{background:var(--teal-bg);color:var(--teal);}
+
+  main{overflow-y:auto;padding:26px 34px 60px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+  .panel h2{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 14px;font-weight:700;}
+  .cust-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;}
+  .cust-name{font-size:21px;font-weight:800;letter-spacing:-.2px;}
+  .cust-meta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:5px;}
+  .cust-flags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .risk-chip{font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:6px;border:1px solid var(--line);text-transform:uppercase;font-weight:700;}
+  .risk-low{color:var(--teal);border-color:#bfe6d7;background:var(--teal-bg);}
+  .risk-medium{color:var(--amber);border-color:#f1d9ac;background:var(--amber-bg);}
+  .risk-high{color:var(--red);border-color:#f0c1c7;background:var(--red-bg);}
+  .crypto-chip{font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:6px;border:1px solid #f1d6a3;background:var(--crypto-bg);color:var(--crypto);font-weight:700;}
+
+  .ai-panel{border:1px solid #bfe0d3;background:linear-gradient(165deg,#f2fbf8 0%,#ffffff 55%);}
+  .ai-head{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+  .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px var(--teal-bg);}
+  .ai-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);font-weight:800;}
+  .score-row{display:flex;align-items:center;gap:26px;margin-bottom:18px;flex-wrap:wrap;}
+  .score-num{font-family:var(--mono);font-size:44px;font-weight:800;line-height:1;color:var(--ink);}
+  .score-sub{font-size:12px;color:var(--muted);margin-top:5px;font-weight:600;}
+  .meter{flex:1;min-width:180px;height:9px;background:#e3ede9;border-radius:5px;overflow:hidden;position:relative;}
+  .meter-fill{height:100%;background:linear-gradient(90deg,#0b8f70,#14b891);border-radius:5px;transition:width .4s;}
+  .meter-base{position:absolute;top:-3px;width:2px;height:15px;background:var(--ink);opacity:.35;}
+  .adj-note{font-size:12.5px;color:var(--ink-soft);margin-top:8px;line-height:1.55;}
+  .summary-text{font-size:14.5px;line-height:1.65;margin:16px 0 4px;color:var(--ink);}
+  .action-suggest{
+    display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:12px;padding:8px 14px;border-radius:7px;
+    background:var(--navy);color:#fff;font-family:var(--mono);font-weight:600;
+  }
+
+  /* Accordion */
+  .accordion{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .acc-item{border:1px solid var(--line);border-radius:10px;background:#fbfbfd;overflow:hidden;transition:box-shadow .15s;}
+  .acc-item.open{box-shadow:var(--shadow-sm);border-color:var(--line-strong);}
+  .acc-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;gap:10px;}
+  .acc-header:hover{background:#f4f5f9;}
+  .acc-header-left{display:flex;align-items:center;gap:10px;min-width:0;}
+  .acc-chevron{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+  .acc-item.open .acc-chevron{transform:rotate(90deg);}
+  .acc-rule-id{font-family:var(--mono);font-size:10.5px;color:var(--navy3);font-weight:700;background:var(--accent-bg);padding:2px 7px;border-radius:4px;flex-shrink:0;}
+  .acc-rule-name{font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .acc-weight{font-family:var(--mono);font-size:10.5px;color:var(--muted);flex-shrink:0;}
+  .acc-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .acc-item.open .acc-body{max-height:900px;}
+  .acc-body-inner{padding:0 16px 16px;border-top:1px solid var(--line);padding-top:12px;}
+  .acc-plain{font-size:13.5px;line-height:1.6;color:var(--ink);margin-bottom:10px;}
+  .acc-evidence{font-family:var(--mono);font-size:12px;color:var(--ink-soft);background:var(--panel-2);border:1px solid var(--line);
+    border-radius:6px;padding:9px 11px;line-height:1.55;}
+
+  .txn-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:12px;}
+  .txn-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+    padding:6px 8px;border-bottom:2px solid var(--line);font-weight:700;}
+  .txn-table td{padding:7px 8px;border-bottom:1px solid var(--line);font-family:var(--mono);color:var(--ink-soft);}
+  .txn-table tr:hover td{background:var(--panel-2);}
+  .dir-credit{color:var(--teal);font-weight:700;}
+  .dir-debit{color:var(--red);font-weight:700;}
+  .asset-crypto{color:var(--crypto);font-weight:700;}
+  .wallet-private{background:var(--purple-bg);color:var(--purple);padding:1px 6px;border-radius:4px;font-size:10.5px;}
+
+  .decision-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+  .btn{flex:1;min-width:150px;padding:12px 10px;border-radius:8px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;
+    font-size:13px;font-weight:700;transition:.12s;font-family:var(--sans);}
+  .btn:hover{border-color:var(--navy3);transform:translateY(-1px);}
+  .btn.close{color:var(--teal);}
+  .btn.escalate{color:var(--red);}
+  .btn.info{color:var(--amber);}
+  .btn.active-choice{color:#fff;border-color:transparent;}
+  .btn.close.active-choice{background:var(--teal);}
+  .btn.escalate.active-choice{background:var(--red);}
+  .btn.info.active-choice{background:var(--amber);}
+  .log-empty{font-size:13px;color:var(--muted);}
+  .log-entry{font-size:12px;font-family:var(--mono);padding:9px 0;border-bottom:1px solid var(--line);color:var(--muted);}
+  .log-entry b{color:var(--ink);}
+  .empty-state{display:flex;align-items:center;justify-content:center;height:60vh;color:var(--muted);font-size:14px;}
+
+  /* ============================================================ */
+  /* Investigation workspace — extension for the L1 alert details  */
+  /* page. Reuses the existing token system (colors/type/shadows)  */
+  /* defined above rather than introducing a new visual language.  */
+  /* ============================================================ */
+
+  .sev-badge{font-size:11px;font-family:var(--mono);font-weight:800;padding:4px 11px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em;}
+  .sev-Critical{background:var(--red-bg);color:var(--red);border:1px solid #f0c1c7;}
+  .sev-High{background:var(--amber-bg);color:var(--amber);border:1px solid #f1d9ac;}
+  .sev-Medium{background:#fff8e1;color:#9a7b1a;border:1px solid #ecdca0;}
+  .sev-Low{background:var(--teal-bg);color:var(--teal);border:1px solid #bfe6d7;}
+
+  .workflow-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 22px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+  .workflow-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .workflow-steps{display:flex;gap:0;overflow-x:auto;}
+  .wf-step{flex:1;min-width:150px;padding:0 14px 0 0;position:relative;}
+  .wf-step:not(:last-child)::after{content:'';position:absolute;top:13px;right:0;width:14px;height:2px;background:var(--line-strong);}
+  .wf-dot{width:26px;height:26px;border-radius:50%;background:var(--panel-2);border:2px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;}
+  .wf-step.done .wf-dot{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .wf-step.active .wf-dot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px var(--accent-bg);}
+  .wf-label{font-size:11.5px;font-weight:700;color:var(--ink);line-height:1.35;}
+  .wf-sub{font-size:10.5px;color:var(--muted);margin-top:2px;}
+  /* ---- login gate ---- */
+  .login-gate{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#1a2b4c,#2f5597);display:flex;align-items:center;justify-content:center;}
+  .login-card{background:var(--panel,#fff);border-radius:14px;padding:34px 34px 26px;width:360px;box-shadow:0 18px 50px rgba(0,0,0,.35);text-align:center;}
+  .login-logo{width:52px;height:52px;border-radius:12px;background:#2f5597;color:#fff;font-weight:800;font-size:26px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+  .login-title{font-size:26px;font-weight:800;color:#1a2b4c;letter-spacing:-.5px;}
+  .login-sub{font-size:12px;color:#5f5e5a;margin-bottom:20px;}
+  .login-label{display:block;text-align:left;font-size:11px;font-weight:700;color:#5f5e5a;text-transform:uppercase;letter-spacing:.05em;margin:12px 0 5px;}
+  .login-input{width:100%;padding:11px 13px;border:1px solid #cfd6e2;border-radius:8px;font-size:14px;box-sizing:border-box;outline:none;}
+  .login-input:focus{border-color:#2f5597;box-shadow:0 0 0 3px rgba(47,85,151,.15);}
+  .login-btn{width:100%;margin-top:20px;padding:12px;background:#2f5597;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;}
+  .login-btn:hover{background:#24457c;}
+  .login-error{color:#a32d2d;font-size:12px;margin-top:12px;min-height:16px;font-weight:600;}
+  .login-hint{margin-top:16px;font-size:11px;color:#7a7a76;line-height:1.7;border-top:1px solid #eee;padding-top:14px;}
+  /* ---- tab bar (header nav) + user chip ---- */
+  .tabbar{display:flex;gap:6px;}
+  .tab-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#c7d0e8;font-size:13px;font-weight:700;padding:9px 20px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+  .tab-btn:hover{background:rgba(255,255,255,.13);color:#fff;}
+  .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 10px rgba(79,107,255,.45);}
+  .user-chip{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:5px 6px 5px 16px;}
+  .user-chip .who{display:flex;flex-direction:column;line-height:1.15;}
+  .user-chip .who-label{font-size:9px;color:#9fabce;text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
+  .user-role{font-size:13px;font-weight:800;color:#fff;letter-spacing:.02em;}
+  .logout-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#e6ebf7;font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:20px;cursor:pointer;transition:all .15s;}
+  .logout-btn:hover{background:var(--red,#c22e3d);border-color:var(--red,#c22e3d);color:#fff;}
+  /* ---- case management ---- */
+  .cm-view{padding:24px;max-width:1100px;margin:0 auto;}
+  .cm-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;box-shadow:var(--shadow-sm);}
+  .cm-title{font-size:18px;font-weight:800;color:var(--ink);}
+  .cm-sub{font-size:12.5px;color:var(--muted);margin:6px 0 18px;line-height:1.6;}
+  .cm-searchrow{display:flex;gap:10px;margin-bottom:20px;}
+  .cm-search{flex:1;padding:12px 15px;border:1px solid var(--line-strong);border-radius:9px;font-size:15px;outline:none;}
+  .cm-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+  .cm-card{border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:14px;}
+  .cm-card-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+  .cm-cust{font-size:15px;font-weight:800;color:var(--ink);}
+  .cm-meta{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .cm-statuspill{font-size:12px;font-weight:800;padding:5px 14px;border-radius:14px;}
+  .cm-loc{display:flex;align-items:center;gap:8px;background:var(--panel-2);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:13px;}
+  .cm-loc b{color:var(--ink);}
+  .cm-rail{display:flex;gap:0;overflow-x:auto;margin-bottom:6px;}
+  .cm-rail-node{flex:1;min-width:96px;text-align:center;position:relative;padding:0 4px;}
+  .cm-rail-node:not(:last-child)::after{content:'';position:absolute;top:13px;right:-2px;width:12px;height:2px;background:var(--line-strong);}
+  .cm-rail-dot{width:26px;height:26px;border-radius:50%;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--panel-2);border:2px solid var(--line-strong);color:var(--muted);}
+  .cm-rail-node.done .cm-rail-dot{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .cm-rail-node.current .cm-rail-dot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-bg);}
+  .cm-rail-name{font-size:9.5px;font-weight:700;color:var(--ink);line-height:1.25;}
+  .cm-rail-status{font-size:8.8px;color:var(--muted);margin-top:1px;}
+  .cm-open-btn{margin-top:4px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:11.5px;font-weight:700;padding:7px 14px;cursor:pointer;}
+  .cm-empty{padding:26px;text-align:center;color:var(--muted);font-size:13px;}
+  /* ---- guided demo ---- */
+  .demo-btn{width:100%;margin-top:14px;padding:11px;background:#0f6e56;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
+  .demo-btn:hover{background:#0b5643;}
+  .demo-view{padding:24px;max-width:1000px;margin:0 auto;}
+  .demo-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px 26px;box-shadow:var(--shadow-sm);}
+  .demo-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px;}
+  .demo-title{font-size:18px;font-weight:800;color:var(--ink);}
+  .demo-caseline{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .demo-exit{background:transparent;border:1px solid var(--line-strong);color:var(--muted);font-size:12px;font-weight:700;padding:6px 13px;border-radius:8px;cursor:pointer;white-space:nowrap;}
+  .demo-railwrap{overflow-x:auto;margin-bottom:20px;}
+  .demo-rail{display:flex;gap:0;min-width:640px;}
+  .demo-rnode{flex:1;text-align:center;position:relative;padding:0 4px;cursor:pointer;}
+  .demo-rnode:not(:last-child)::after{content:'';position:absolute;top:16px;right:-2px;width:14px;height:2px;background:var(--line-strong);}
+  .demo-rdot{width:32px;height:32px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--panel-2);border:2px solid var(--line-strong);color:var(--muted);transition:all .15s;}
+  .demo-rnode.done .demo-rdot{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .demo-rnode.active .demo-rdot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px var(--accent-bg);transform:scale(1.08);}
+  .demo-rname{font-size:10px;font-weight:700;color:var(--ink);line-height:1.25;}
+  .demo-rrole{font-size:9px;color:var(--muted);margin-top:1px;}
+  .demo-stepcard{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:20px 22px;min-height:220px;}
+  .demo-stepcard.blocking{border-left-color:#ba7517;}
+  .demo-stepcard.sar{border-left-color:#a32d2d;}
+  .demo-stagehead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px;}
+  .demo-stagename{font-size:16px;font-weight:800;color:var(--ink);}
+  .demo-login-pill{font-size:11px;font-weight:700;background:#2f5597;color:#fff;padding:4px 11px;border-radius:12px;}
+  .demo-role{font-size:12px;color:var(--muted);margin-bottom:12px;}
+  .demo-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .demo-badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:.03em;}
+  .demo-badge.ai{background:var(--accent-bg);color:var(--accent);}
+  .demo-badge.auto{background:#eef7f2;color:#0f6e56;}
+  .demo-badge.block{background:#faefd9;color:#7a5300;}
+  .demo-badge.conf{background:#eef7f2;color:#0f6e56;}
+  .demo-badge.over{background:#fdeaea;color:#a32d2d;}
+  .demo-narr{font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:10px;}
+  .demo-checklist{display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;margin:10px 0;}
+  .demo-check{font-size:11px;color:var(--muted);padding-left:15px;position:relative;line-height:1.6;}
+  .demo-check::before{content:'✓';position:absolute;left:0;color:var(--teal);font-weight:700;}
+  .demo-hitl{font-size:12px;background:var(--panel-2);border-radius:7px;padding:10px 12px;margin-top:8px;}
+  .demo-hitl b{color:var(--ink);}
+  .demo-intel{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:11.5px;margin-top:10px;background:var(--panel-2);border-radius:7px;padding:11px 13px;}
+  .demo-intel span{color:var(--muted);}
+  .demo-sarbox{border:1px solid #f0c9c9;background:#fdf3f3;border-radius:8px;padding:14px 16px;margin-top:12px;font-size:12.5px;}
+  .demo-sarbox b{color:#a32d2d;}
+  .demo-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;}
+  .demo-nav{background:var(--panel-2);border:1px solid var(--line-strong);color:var(--ink);font-size:13px;font-weight:700;padding:10px 18px;border-radius:8px;cursor:pointer;}
+  .demo-nav:disabled{opacity:.4;cursor:not-allowed;}
+  .demo-nav.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .demo-progress{font-size:12px;color:var(--muted);font-weight:600;}
+  .demo-open{width:100%;margin-top:14px;background:transparent;border:1px dashed var(--line-strong);color:var(--accent);font-size:12.5px;font-weight:700;padding:11px;border-radius:8px;cursor:pointer;}
+  /* ---- case lifecycle (L1 -> L2 -> L3 -> MLRO) ---- */
+  .lifecycle-rail{display:flex;gap:0;overflow-x:auto;margin-bottom:18px;padding-bottom:4px;}
+  .lc-node{flex:1;min-width:120px;position:relative;text-align:center;padding:0 6px;}
+  .lc-node:not(:last-child)::after{content:'';position:absolute;top:15px;right:-2px;width:14px;height:2px;background:var(--line-strong);}
+  .lc-dot{width:30px;height:30px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:var(--panel-2);border:2px solid var(--line-strong);color:var(--muted);}
+  .lc-node.done .lc-dot{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .lc-node.current .lc-dot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px var(--accent-bg);}
+  .lc-node.blocked .lc-dot{background:var(--amber,#b8860b);border-color:var(--amber,#b8860b);color:#fff;}
+  .lc-node.skipped .lc-dot{opacity:.4;}
+  .lc-name{font-size:10.5px;font-weight:700;color:var(--ink);line-height:1.3;}
+  .lc-role{font-size:9.5px;color:var(--muted);margin-top:1px;}
+  .lc-stage-card{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;background:var(--panel);}
+  .lc-stage-card.blocking{border-left:4px solid var(--amber,#b8860b);}
+  .lc-stage-card.autonomous{border-left:4px solid var(--teal);}
+  .lc-stage-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .lc-stage-title{font-size:13px;font-weight:800;color:var(--ink);}
+  .lc-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:12px;text-transform:uppercase;letter-spacing:.04em;}
+  .lc-badge.ai{background:var(--accent-bg);color:var(--accent);}
+  .lc-badge.hitl-confirmed{background:#e3f5ec;color:#0f6e56;}
+  .lc-badge.hitl-overridden{background:#fdeaea;color:#a32d2d;}
+  .lc-badge.blocking{background:#faefd9;color:#7a5300;}
+  .lc-badge.auto{background:#eef7f2;color:#0f6e56;}
+  .lc-narr{font-size:12px;color:var(--ink-soft,#333);line-height:1.5;margin:6px 0;}
+  .lc-hitl{font-size:11.5px;background:var(--panel-2);border-radius:6px;padding:8px 10px;margin-top:8px;}
+  .lc-hitl b{color:var(--ink);}
+  .lc-reasons{font-size:11px;color:#7a5300;background:#faefd9;border-radius:6px;padding:7px 10px;margin-top:6px;}
+  .lc-checklist{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin-top:8px;}
+  .lc-check{font-size:10.5px;color:var(--muted);padding-left:14px;position:relative;line-height:1.5;}
+  .lc-check::before{content:'\2713';position:absolute;left:0;color:var(--teal);font-weight:700;}
+  .lc-intel{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:11px;margin-top:8px;}
+  .lc-intel div span{color:var(--muted);}
+  .lc-sar{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin-top:8px;background:var(--panel-2);font-size:11.5px;}
+  .lc-outcome-pill{font-size:11px;font-weight:700;padding:3px 12px;border-radius:12px;background:var(--accent-bg);color:var(--accent);}
+
+  #invAccordion .accordion-item{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius) !important;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);}
+  #invAccordion .accordion-button{font-family:var(--sans);font-size:13.5px;font-weight:700;color:var(--ink);background:var(--panel);padding:15px 22px;box-shadow:none !important;}
+  #invAccordion .accordion-button:not(.collapsed){background:var(--panel-2);color:var(--navy2);}
+  #invAccordion .accordion-button::after{filter:none;}
+  #invAccordion .accordion-body{padding:20px 22px 24px;border-top:1px solid var(--line);}
+  #invAccordion .accordion-header .sec-flag{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:12px;margin-left:10px;}
+  #invAccordion .sec-flag.flag-y{background:var(--red-bg);color:var(--red);}
+  #invAccordion .sec-flag.flag-n{background:var(--teal-bg);color:var(--teal);}
+  #invAccordion .sec-flag.flag-neutral{background:var(--accent-bg);color:var(--navy3);}
+  #invAccordion .sec-flag.flag-warn{background:var(--amber-bg,#fff3cd);color:var(--amber,#a3620a);}
+  .sec-icon{margin-right:9px;opacity:.7;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+  .kpi-card{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:12px 14px;}
+  .kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;margin-bottom:6px;}
+  .kpi-value{font-size:16.5px;font-weight:800;color:var(--ink);font-family:var(--mono);line-height:1.25;}
+  .kpi-value.small{font-size:13px;font-weight:700;font-family:var(--sans);}
+
+  .def-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px 22px;}
+  .def-item dt{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;margin-bottom:3px;}
+  .def-item dd{font-size:13.5px;color:var(--ink);margin:0;font-weight:600;}
+  .subhead{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy3);font-weight:800;margin:20px 0 12px;padding-top:14px;border-top:1px solid var(--line);}
+  .subhead:first-child{margin-top:0;padding-top:0;border-top:none;}
+
+  .status-pill{font-size:10.5px;font-family:var(--mono);font-weight:700;padding:2px 9px;border-radius:10px;}
+  .status-verified, .status-approved, .status-yes-y{background:var(--teal-bg);color:var(--teal);}
+  .status-expired, .status-pending, .status-not-provided{background:var(--amber-bg);color:var(--amber);}
+  .status-flagged{background:var(--red-bg);color:var(--red);}
+
+  .inv-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px;}
+  .inv-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:7px 9px;border-bottom:2px solid var(--line);font-weight:700;background:var(--panel-2);}
+  .inv-table td{padding:8px 9px;border-bottom:1px solid var(--line);color:var(--ink-soft);}
+  .inv-table tr:hover td{background:var(--panel-2);}
+  .inv-table tr.row-flagged td{background:var(--amber-bg,#fff7e6);}
+  .pivot-controls{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 12px;font-size:12px;color:var(--muted);align-items:center;}
+  .pivot-controls label{display:flex;gap:6px;align-items:center;font-weight:700;text-transform:uppercase;font-size:10.5px;letter-spacing:.04em;}
+  .pivot-controls select{font-family:var(--sans);font-size:12.5px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 8px;background:var(--panel-2);text-transform:none;font-weight:600;}
+  .pivot-table td b{color:var(--ink);}
+  .table-scroll{max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;}
+  .table-scroll .inv-table th{position:sticky;top:0;z-index:1;}
+  .txn-filter-row th{padding:5px 6px;background:var(--panel-2);position:sticky;top:26px;z-index:1;}
+  .txn-filter-row input, .txn-filter-row select{width:100%;font-size:11px;font-family:var(--sans);padding:5px 6px;
+    border:1px solid var(--line-strong);border-radius:5px;background:#fff;color:var(--ink);box-sizing:border-box;}
+  .txn-filter-row input:focus, .txn-filter-row select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);}
+
+  .txn-slider-wrap{margin:12px 0 4px;padding:14px 16px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;}
+  .txn-slider{width:100%;accent-color:var(--accent);}
+  .txn-slider-ticks{display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;font-family:var(--mono);color:var(--muted);}
+  .txn-slider-ticks .txn-tick{flex:1;text-align:center;}
+  .txn-slider-ticks .txn-tick:first-child{text-align:left;}
+  .txn-slider-ticks .txn-tick:last-child{text-align:right;}
+  .txn-slider-ticks .txn-tick.active{color:var(--accent);font-weight:700;}
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px;}
+  .chart-box{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:14px 16px;}
+  .chart-box h4{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;margin:0 0 10px;}
+  .chart-canvas-wrap{position:relative;height:210px;}
+  .chart-detail{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line-strong);}
+  .chart-detail-item{font-size:11px;font-family:var(--mono);color:var(--ink-soft);}
+  .chart-detail-item b{color:var(--ink);font-weight:700;}
+  @media (max-width:900px){.chart-grid{grid-template-columns:1fr;}}
+
+  .compare-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .compare-card{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:13px 15px;}
+  .compare-card .cc-label{font-size:10.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .compare-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;}
+  .compare-row .exp{color:var(--muted);}
+  .compare-row .act{font-weight:800;font-family:var(--mono);}
+  .compare-row .act.dev{color:var(--red);}
+  .deviation-list{margin-top:14px;list-style:none;padding:0;}
+  .deviation-list li{font-size:13px;padding:9px 12px;background:var(--red-bg);color:var(--red);border-radius:7px;margin-bottom:7px;font-weight:600;}
+  .deviation-list li::before{content:'⚠ ';}
+
+  .flag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+  .flag-card{display:flex;gap:12px;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;align-items:flex-start;}
+  .flag-light{width:13px;height:13px;border-radius:50%;flex-shrink:0;margin-top:3px;box-shadow:0 0 0 3px rgba(0,0,0,.03);}
+  .flag-light.on{background:var(--red);box-shadow:0 0 0 4px var(--red-bg);}
+  .flag-light.off{background:var(--teal);box-shadow:0 0 0 4px var(--teal-bg);}
+  .flag-name{font-size:13px;font-weight:700;color:var(--ink);}
+  .flag-reason{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45;}
+  .flag-weight{font-size:10px;font-family:var(--mono);color:var(--muted);margin-top:4px;}
+  .flag-card-clickable{cursor:pointer;transition:background .12s,border-color .12s;margin:-4px -6px;padding:4px 6px;border-radius:6px;}
+  .flag-card-clickable:hover{background:var(--panel-3,#eef1fb);}
+  .flag-card-open{grid-column:1 / -1;}
+  .flag-expand-hint{font-size:10px;font-weight:600;color:var(--accent);text-transform:none;margin-left:6px;}
+  .flag-drilldown{margin-top:10px;}
+  .flag-drilldown .inv-table{font-size:12px;}
+
+  .osint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+  .osint-card{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:14px 15px;}
+  .osint-head{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px;}
+  .osint-headline{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.4;margin-bottom:8px;}
+  .osint-summary{font-size:12.5px;color:var(--ink-soft);line-height:1.55;margin-bottom:10px;}
+  .osint-tags{display:flex;gap:6px;flex-wrap:wrap;}
+  .osint-tag{font-size:10px;font-family:var(--mono);font-weight:700;padding:3px 8px;border-radius:5px;background:var(--red-bg);color:var(--red);}
+  .osint-tag.sentiment-Positive{background:var(--teal-bg);color:var(--teal);}
+  .osint-tag.sentiment-Neutral{background:var(--accent-bg);color:var(--navy3);}
+
+  .ubo-tree{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:18px;}
+  .ubo-root{background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;font-weight:800;font-size:13.5px;}
+  .ubo-connector{width:2px;height:16px;background:var(--line-strong);}
+  .ubo-branches{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  .ubo-node{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:8px;padding:9px 13px;min-width:150px;text-align:center;}
+  .ubo-node .ubo-name{font-size:12.5px;font-weight:700;color:var(--ink);}
+  .ubo-node .ubo-pct{font-family:var(--mono);font-weight:800;color:var(--accent);font-size:14px;margin:3px 0;}
+  .ubo-node .ubo-flags{display:flex;gap:4px;justify-content:center;margin-top:4px;}
+
+  .rec-banner{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:10px;margin-bottom:16px;}
+  .rec-banner.rec-Close{background:var(--teal-bg);border:1px solid #bfe6d7;}
+  .rec-banner.rec-Escalate{background:var(--amber-bg);border:1px solid #f1d9ac;}
+  .rec-banner.rec-Need{background:var(--accent-bg);border:1px solid var(--accent-soft);}
+  .rec-banner.rec-Potential{background:var(--red-bg);border:1px solid #f0c1c7;}
+  .rec-icon{font-size:26px;}
+  .rec-decision{font-size:17px;font-weight:800;color:var(--ink);}
+  .rec-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .rec-reasons{list-style:none;padding:0;margin:0;}
+  .rec-reasons li{font-size:13px;line-height:1.6;padding:7px 0;border-bottom:1px solid var(--line);color:var(--ink-soft);}
+  .rec-reasons li:last-child{border-bottom:none;}
+  .rec-reasons li::before{content:'▸ ';color:var(--accent);font-weight:800;}
+
+  .notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .notes-field label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;}
+  .notes-field select{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:9px 12px;
+    font-family:var(--sans);font-size:13px;background:var(--panel-2);}
+  .notes-field select:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);background:#fff;}
+  .notes-field textarea{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:9px 12px;
+    font-family:var(--sans);font-size:13px;background:var(--panel-2);resize:vertical;}
+  .notes-field textarea:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);background:#fff;}
+  @media (max-width:900px){.notes-grid{grid-template-columns:1fr;}}
+  select.decision-rationale{width:100%;margin-top:12px;border:1px solid var(--line-strong);border-radius:8px;padding:10px 12px;
+    font-family:var(--sans);font-size:13px;background:var(--panel-2);}
+  select.decision-rationale:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);background:#fff;}
+
+  .timeline{position:relative;padding-left:26px;}
+  .timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line-strong);}
+  .tl-item{position:relative;padding-bottom:18px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{position:absolute;left:-26px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--panel);box-shadow:0 0 0 2px var(--accent);}
+  .tl-time{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .tl-action{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:2px;}
+  .tl-meta{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .tl-user{font-weight:600;color:var(--navy3);}
+
+  .sla-row{display:flex;align-items:center;gap:26px;flex-wrap:wrap;}
+  .sla-stat{min-width:110px;}
+  .sla-stat .sv{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--ink);}
+  .sla-stat .sl{font-size:10.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px;}
+  .sla-bar-wrap{flex:1;min-width:220px;}
+  .sla-bar{height:11px;border-radius:6px;background:#e3e6ee;overflow:hidden;}
+  .sla-bar-fill{height:100%;border-radius:6px;transition:width .4s;}
+  .sla-fill-ok{background:linear-gradient(90deg,#0b8f70,#14b891);}
+  .sla-fill-warn{background:linear-gradient(90deg,#c98a1d,#e0a83f);}
+  .sla-fill-bad{background:linear-gradient(90deg,#c22e3d,#e0505f);}
+  .sla-status-pill{font-family:var(--mono);font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;}
+  .sla-Within-SLA{background:var(--teal-bg);color:var(--teal);}
+  .sla-Near-Breach{background:var(--amber-bg);color:var(--amber);}
+  .sla-Breached{background:var(--red-bg);color:var(--red);}
+
+  .disp-btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .rationale-note{font-size:12px;color:var(--muted);margin-top:8px;}
+
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .narrative-box{width:100%;margin-top:8px;border:1px solid var(--line-strong);border-radius:8px;padding:10px 12px;
+    font-family:var(--sans);font-size:13px;background:var(--panel-2);min-height:84px;resize:vertical;}
+  .narrative-box:focus{outline:2px solid var(--accent-soft);border-color:var(--accent);background:#fff;}
+  .narrative-box:disabled{background:var(--panel-2);color:var(--ink-soft);}
+  .field-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;display:block;margin-top:14px;margin-bottom:6px;}
+  .submit-btn{margin-top:2px;background:var(--navy);color:#fff;border-color:var(--navy);}
+  .submit-btn:disabled{background:#c7cbd8;border-color:#c7cbd8;color:#fff;opacity:1;}
+  .decision-locked-banner{font-size:12.5px;background:var(--teal-bg);color:var(--teal);border:1px solid #bfe6d7;
+    border-radius:8px;padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .decision-amend-banner{font-size:12.5px;background:var(--amber-bg);color:var(--amber);border:1px solid #f1d9ac;
+    border-radius:8px;padding:9px 13px;margin-bottom:12px;}
+  .amend-link{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--teal);background:#fff;
+    border:1px solid #bfe6d7;border-radius:14px;padding:3px 11px;cursor:pointer;}
+  .amend-link:hover{background:var(--teal-bg);}
+  .prior-decisions{margin-top:6px;}
+  .print-btn{font-family:var(--mono);font-size:11.5px;font-weight:600;color:#dbe2f5;background:rgba(255,255,255,.08);
+    padding:8px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.12);cursor:pointer;white-space:nowrap;}
+  .print-btn:hover{background:rgba(255,255,255,.16);}
+
+  @media print{
+    .queue, .print-btn, .audit-link, header .stat-strip, .decision-row, .submit-btn, .amend-link,
+    #analystFeedbackPanel select, #analystFeedbackPanel textarea, #analystFeedbackPanel .field-label{ display:none !important; }
+    .layout{ display:block; height:auto; }
+    main{ overflow:visible; padding:8px 4px; }
+    .accordion-collapse{ display:block !important; height:auto !important; }
+    .panel, .workflow-panel{ box-shadow:none; break-inside:avoid; }
+    body{ background:#fff; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ROLE LOGIN GATE ============ -->
+<div id="loginGate" class="login-gate">
+  <div class="login-card">
+    <div class="login-logo">S</div>
+    <div class="login-title">SARA.ai</div>
+    <div class="login-sub">AML Investigation Platform · Role Sign-in</div>
+    <label class="login-label">Username</label>
+    <input id="loginUser" class="login-input" placeholder="L1 / L2 / L3 / MLRO / CM" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    <label class="login-label">Password</label>
+    <input id="loginPass" type="password" class="login-input" placeholder="password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div id="loginError" class="login-error"></div>
+    <div class="login-hint">
+      Demo credentials (username = password):<br>
+      <b>L1</b>/L1 · <b>L2</b>/L2 · <b>L3</b>/L3 · <b>MLRO</b>/MLRO · <b>CM</b>/CM (Case Management)
+    </div>
+    <button class="demo-btn" onclick="startGuidedDemo()">▶ Guided demo — one case, L1 → SAR filing</button>
+  </div>
+</div>
+
+<!-- ============ APP SHELL (hidden until login) ============ -->
+<div id="appShell" style="display:none;">
+
+<!-- ============ DASHBOARD HEADER ============ -->
+<header id="dashHeader">
+  <div class="brand" onclick="goDashboard()" style="cursor:pointer">
+    <div class="logo">S</div>
+    <div class="brand-text">
+      <h1>SARA<span class="dot-ai">.ai</span></h1>
+      <div class="tag">AML Investigation Platform</div>
+    </div>
+  </div>
+  <div class="header-nav" id="dashNav"></div>
+  <div class="header-right">
+    <button class="icon-btn" title="Notifications" onclick="return false">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip">
+      <div class="who">
+        <span class="who-label">Signed in</span>
+        <span class="user-role" id="userRoleLabel"></span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Sign out">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ DASHBOARD VIEW ============ -->
+<div class="dash-view" id="dashboardView">
+  <div class="dash-inner">
+    <div class="dash-welcome">
+      <div>
+        <div class="dash-hello">Welcome,</div>
+        <div class="dash-user" id="dashUserName">Analyst</div>
+        <div class="dash-userrole" id="dashUserRole"></div>
+      </div>
+      <div class="dash-kpis" id="dashKpis"></div>
+    </div>
+
+    <div class="dash-panel">
+      <div class="dash-panel-head">
+        <div class="dash-panel-title">Assigned Alerts <span class="dash-count" id="dashAlertCount">0</span></div>
+        <div class="dash-view-toggle">
+          <button class="dvt-btn active" id="dvtTable" onclick="setDashLayout('table')" title="Table view">▤ Table</button>
+          <button class="dvt-btn" id="dvtCards" onclick="setDashLayout('cards')" title="Card view">▦ Cards</button>
+        </div>
+      </div>
+      <div class="dash-controls">
+        <div class="dash-search"><input id="dashSearch" placeholder="Search alert ID, customer, scenario…" oninput="renderDashboard()"></div>
+        <select class="dash-filter" id="dashFilterPriority" onchange="renderDashboard()">
+          <option value="">All priorities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
+        </select>
+        <select class="dash-filter" id="dashFilterStatus" onchange="renderDashboard()">
+          <option value="">All statuses</option>
+        </select>
+        <select class="dash-filter" id="dashFilterRisk" onchange="renderDashboard()">
+          <option value="">All risk ratings</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
+        </select>
+        <select class="dash-filter" id="dashSort" onchange="renderDashboard()">
+          <option value="score-desc">Sort: Risk score ↓</option>
+          <option value="score-asc">Sort: Risk score ↑</option>
+          <option value="sla-asc">Sort: SLA remaining ↑</option>
+          <option value="date-desc">Sort: Alert date ↓</option>
+          <option value="priority">Sort: Priority</option>
+        </select>
+      </div>
+      <div id="dashList"></div>
+      <div class="dash-pagination" id="dashPagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INVESTIGATION HEADER (clean) ============ -->
+<header id="invHeader" style="display:none;">
+  <div class="brand" onclick="goDashboard()" style="cursor:pointer">
+    <div class="logo">S</div>
+    <div class="brand-text">
+      <h1>SARA<span class="dot-ai">.ai</span></h1>
+      <div class="tag">Investigation Workspace</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="inv-back" onclick="goDashboard()" title="Back to dashboard">← Dashboard</button>
+    <button class="icon-btn" title="Notifications" onclick="return false">🔔<span class="notif-dot"></span></button>
+    <button class="icon-btn" title="Profile" onclick="return false">👤</button>
+    <div class="user-chip">
+      <div class="who">
+        <span class="who-label">Signed in</span>
+        <span class="user-role" id="userRoleLabel2"></span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Sign out">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ INVESTIGATION WORKSPACE VIEW ============ -->
+<div class="inv-shell" id="investigationView" style="display:none;">
+  <aside class="inv-nav" id="invNav">
+    <button class="inv-nav-toggle" id="invNavToggle" onclick="toggleInvNav()" title="Collapse / expand">‹</button>
+    <div class="inv-nav-casehdr" id="invNavCaseHdr"></div>
+    <nav class="inv-nav-list" id="invNavList"></nav>
+  </aside>
+  <div class="inv-content">
+    <div class="inv-content-bar" id="invContentBar"></div>
+    <main id="mainPanel"></main>
+  </div>
+</div>
+
+<!-- CASE MANAGEMENT VIEW -->
+<div class="cm-view" id="caseMgmtView" style="display:none;">
+  <div class="cm-panel">
+    <div class="cm-title">Case Management · Alert / Case Tracker</div>
+    <div class="cm-sub">Enter an Alert ID (e.g. ALT-CUST0027), Customer ID, or name to see where the case currently sits and its status across the L1 → L2 → L3 → MLRO lifecycle.</div>
+    <div class="cm-searchrow">
+      <input id="cmSearch" class="cm-search" placeholder="Alert ID / Customer ID / name…" oninput="renderCaseMgmt()">
+    </div>
+    <div id="cmResults"></div>
+  </div>
+</div>
+
+<!-- hidden legacy containers kept so existing code referencing them stays safe -->
+<div style="display:none">
+  <div id="tabBar"></div><div id="statStrip"></div>
+  <div id="searchBox"></div><div id="riskFilterRow"></div><div id="channelDropdownWrap"></div>
+  <div id="ruleChipFilters"></div><div id="queueList"></div><div id="queueHeadLabel"></div>
+</div>
+
+<!-- GUIDED DEMO VIEW (one case, L1 -> SAR) -->
+<div class="demo-view" id="demoView" style="display:none;">
+  <div class="demo-panel">
+    <div class="demo-head">
+      <div>
+        <div class="demo-title">Guided walkthrough — a single case from L1 alert to SAR filing</div>
+        <div class="demo-caseline" id="demoCaseLine"></div>
+      </div>
+      <button class="demo-exit" onclick="exitGuidedDemo()">✕ Exit demo</button>
+    </div>
+    <div class="demo-railwrap"><div class="demo-rail" id="demoRail"></div></div>
+    <div class="demo-stepcard" id="demoStepCard"></div>
+    <div class="demo-controls">
+      <button class="demo-nav" id="demoPrev" onclick="demoStep(-1)">← Previous</button>
+      <div class="demo-progress" id="demoProgress"></div>
+      <button class="demo-nav primary" id="demoNext" onclick="demoStep(1)">Next stage →</button>
+    </div>
+    <button class="demo-open" onclick="demoOpenFullCase()">Open the full case file for this case →</button>
+  </div>
+</div>
+
+</div><!-- /appShell -->
+
+<script>
+const ALERTS = __ALERTS_JSON__;
+const RULE_CATALOG = __RULE_CATALOG_JSON__;
+const INV_DATA = __INVESTIGATION_JSON__; // customer_id -> full investigation workspace bundle
+
+const decisions = {}; // alert_id -> {action, note, narrative, override, amended, history[], timestamp} -- only set once SUBMITTED
+const notesState = {}; // alert_id -> {summary, observations, evidence, decision, recommendation, comments}
+let selectedId = ALERTS.length ? ALERTS[0].alert_id : null;
+let searchTerm = '';
+let riskFilter = 'all';
+let activeRuleFilters = new Set();
+const CHANNELS = ['cash','card','ach','wire','zelle','crypto'];
+let activeChannelFilters = new Set();
+let channelMenuOpen = false;
+const RISK_SCORE_RANGES = {low:'score 0–49', medium:'score 50–69', high:'score 70–100'};
+let openAccordions = new Set(); // rule_ids open for current alert
+const chartInstances = {}; // canvas id -> Chart instance, torn down before re-render
+const autonomousDecisionsLogged = {}; // alert_id -> true once written to the AI autonomous audit log
+let overrideMode = false; // analyst explicitly chose to override an AI autonomous decision
+
+// Staging state for the current alert's disposition -- a click on Close / Request Info /
+// Escalate only stages a choice; nothing is committed (or written to the audit file) until
+// Submit Decision is clicked. Reset whenever the analyst switches alerts.
+let stagedAction = null;
+let draftNote = '';
+let draftNarrative = '';
+
+const DECISIONS_STORAGE_KEY = 'l1_tm_poc_decisions_v1';
+function loadDecisionsFromStorage(){
+  try{
+    const raw = localStorage.getItem(DECISIONS_STORAGE_KEY);
+    if(raw) Object.assign(decisions, JSON.parse(raw));
+  } catch(err){
+    console.error('Failed to load previously submitted decisions from localStorage:', err);
+  }
+}
+function saveDecisionsToStorage(){
+  try{
+    localStorage.setItem(DECISIONS_STORAGE_KEY, JSON.stringify(decisions));
+  } catch(err){
+    console.error('Failed to save decisions to localStorage:', err);
+  }
+}
+
+function autoNotesFor(alertId){
+  const a = ALERTS.find(x=>x.alert_id===alertId);
+  const inv = a ? INV_DATA[a.customer_id] : null;
+  const blank = {summary:'',observations:'',evidence:'',decision:'',recommendation:'',additional_notes:''};
+  if(!a || !inv) return blank;
+
+  const dec = inv.ai_l1_decision;
+  const devFlags = inv.historical_behaviour.deviation_flags.length;
+  const redFlagsOn = inv.red_flags.filter(f=>f.triggered==='Y').length;
+  const leaningEscalate = dec.final_action ? dec.final_action==='escalate_to_l2'
+                          : (dec.red_flag_weight_total>=30 || dec.max_ai_confidence_score>=50);
+
+  let summary;
+  if(devFlags>=2) summary = "Significant deviation — potential suspicious activity";
+  else if(devFlags===1) summary = "Moderate deviation — warrants review";
+  else if(redFlagsOn>0) summary = "Minor deviation from expected profile";
+  else summary = "Consistent with customer's expected profile";
+
+  let observations;
+  if(inv.kyc.cdd_status !== 'Approved') observations = "KYC/CDD documentation is expired or incomplete";
+  else if(inv.pep_screening.pep_flag==='Y' || inv.sanctions_screening.sanctions_match==='Y') observations = "Screening returned adverse matches requiring review";
+  else if(inv.aml_history.history_available==='Y') observations = "Prior AML history on file for this customer/account";
+  else observations = "KYC/CDD documentation is current and consistent";
+
+  let evidence;
+  if(inv.sanctions_screening.sanctions_match==='Y' || inv.pep_screening.pep_flag==='Y') evidence = "Screening hit report (PEP/Sanctions)";
+  else if(inv.osint.negative_news==='Y') evidence = "Adverse media / OSINT article(s)";
+  else if(inv.aml_history.history_available==='Y') evidence = "Prior investigation case file";
+  else if(redFlagsOn>0) evidence = "Rule-engine evidence (transaction thresholds/timing) only";
+  else evidence = "Account/transaction history export";
+
+  let decision;
+  if(inv.sanctions_screening.sanctions_match==='Y') decision = "File Suspicious Activity Report (SAR)";
+  else decision = leaningEscalate ? "Escalate to L2 / SAR Review" : "Close — False Positive";
+
+  let recommendation;
+  if(leaningEscalate) recommendation = "Escalate to L2/SAR review team";
+  else if(inv.kyc.edd_required==='Y') recommendation = "Refer to compliance for enhanced due diligence (EDD)";
+  else if(inv.aml_history.history_available==='Y') recommendation = "Update customer risk rating";
+  else recommendation = "No further action required";
+
+  return {summary, observations, evidence, decision, recommendation, additional_notes: dec.decision_summary};
+}
+
+function getNotes(alertId){
+  if(!notesState[alertId]) notesState[alertId] = autoNotesFor(alertId);
+  return notesState[alertId];
+}
+function updateNote(alertId, field, value){
+  getNotes(alertId)[field] = value;
+}
+
+const PRIORITY_MAP = (score)=> score>=85 ? 'Critical' : score>=70 ? 'High' : score>=50 ? 'Medium' : 'Low';
+const DECISION_LABELS = {close_false_positive:'Closed — False Positive', escalate_to_l2:'Escalated to L2'};
+const STAGE_LABELS_JS = {L1_REVIEW:'L1 Analyst Review', L1_QC:'L3 QC (of L1)', L2_REVIEW:'L2 Investigation', L2_QC:'L3 QC (of L2)', MLRO_L3:'L3 Deep Investigation', MLRO_DECISION:'Compliance / MLRO'};
+const STAGE_ROLE_JS = {L1_REVIEW:'L1 Analyst', L1_QC:'L3 QC Reviewer', L2_REVIEW:'L2 Investigator', L2_QC:'L3 QC Reviewer', MLRO_L3:'L3 Senior Investigator', MLRO_DECISION:'MLRO / Compliance'};
+
+// ---- role-based access + routing ------------------------------------------
+// Which lifecycle stages each signed-in role owns (i.e. cases that currently
+// rest at these stages appear in that role's queue). L3 owns both QC stages
+// and the deep investigation, per the process map (L3 = QC for L1 & L2, and
+// L3 runs the MLRO-tier deep investigation).
+const ROLE_STAGES = {
+  L1:   ['L1_REVIEW'],
+  L2:   ['L2_REVIEW'],
+  L3:   ['L1_QC','L2_QC','MLRO_L3'],
+  MLRO: ['MLRO_DECISION'],
+};
+const ROLE_LABEL = {L1:'L1 Analyst', L2:'L2 Investigator', L3:'L3 / QC & Senior', MLRO:'MLRO / Compliance', CM:'Case Management'};
+// Demo credentials: username === password. Role is the (upper-cased) username.
+const VALID_ROLES = ['L1','L2','L3','MLRO','CM'];
+let CURRENT_ROLE = null;   // 'L1'|'L2'|'L3'|'MLRO'|'CM'
+let ACTIVE_TAB = 'workspace'; // 'workspace' | 'casemgmt'
+
+function ownerRoleForStage(stage){
+  for(const role of ['L1','L2','L3','MLRO']){ if(ROLE_STAGES[role].includes(stage)) return role; }
+  return null;
+}
+// The alert's current owning role, from its case_workflow current_stage.
+function alertOwnerRole(a){
+  const inv = INV_DATA[a.customer_id];
+  if(!inv || !inv.case_workflow) return 'L1';
+  return ownerRoleForStage(inv.case_workflow.current_stage) || 'L1';
+}
+
+function doLogin(){
+  const u = (document.getElementById('loginUser').value||'').trim().toUpperCase();
+  const p = (document.getElementById('loginPass').value||'').trim().toUpperCase();
+  const err = document.getElementById('loginError');
+  if(!VALID_ROLES.includes(u) || u!==p){
+    err.textContent = 'Invalid credentials. Use L1/L1, L2/L2, L3/L3, MLRO/MLRO, or CM/CM.';
+    return;
+  }
+  err.textContent='';
+  CURRENT_ROLE = u;
+  document.getElementById('loginGate').style.display='none';
+  document.getElementById('appShell').style.display='block';
+  const roleTxt = ROLE_LABEL[u] + ' ('+u+')';
+  document.getElementById('userRoleLabel').textContent = roleTxt;
+  document.getElementById('userRoleLabel2').textContent = roleTxt;
+  document.getElementById('dashUserName').textContent = DEMO_ANALYST_NAMES[u] || 'Analyst';
+  document.getElementById('dashUserRole').textContent = ROLE_LABEL[u];
+  buildDashNav();
+  // CM users land straight on Case Management.
+  if(u==='CM'){ goCaseMgmt(); } else { goDashboard(); }
+}
+function doLogout(){
+  CURRENT_ROLE=null; selectedId=null;
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('loginGate').style.display='flex';
+  document.getElementById('loginUser').value='';
+  document.getElementById('loginPass').value='';
+}
+
+const DEMO_ANALYST_NAMES = {L1:'John Smith', L2:'Daniela Alvarez', L3:'Chloe Marsh', MLRO:'A. Rahman', CM:'Case Manager'};
+
+// ---- view router : dashboard | investigation | casemgmt -------------------
+function hideAllViews(){
+  ['dashboardView','investigationView','caseMgmtView','demoView'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  document.getElementById('dashHeader').style.display='flex';
+  document.getElementById('invHeader').style.display='none';
+}
+function buildDashNav(){
+  const bar = document.getElementById('dashNav');
+  if(!bar) return;
+  const isCM = CURRENT_ROLE==='CM';
+  const items = [];
+  if(!isCM) items.push(['dashboard','My Dashboard']);
+  items.push(['casemgmt','Case Management']);
+  bar.innerHTML = items.map(([k,label])=>
+    `<button class="tab-btn ${CURRENT_VIEW===k?'active':''}" onclick="${k==='dashboard'?'goDashboard':'goCaseMgmt'}()">${label}</button>`
+  ).join('');
+}
+let CURRENT_VIEW = 'dashboard';
+function goDashboard(){
+  CURRENT_VIEW='dashboard';
+  hideAllViews();
+  document.getElementById('dashboardView').style.display='block';
+  buildDashNav();
+  renderDashboard();
+  window.scrollTo(0,0);
+}
+function goCaseMgmt(){
+  CURRENT_VIEW='casemgmt';
+  hideAllViews();
+  document.getElementById('caseMgmtView').style.display='block';
+  buildDashNav();
+  renderCaseMgmt();
+  window.scrollTo(0,0);
+}
+function openInvestigation(alertId){
+  selectedId = alertId;
+  // reset per-alert interaction state (same as legacy selectAlert)
+  openAccordions = new Set(); openRedFlags = new Set();
+  stagedAction = null; draftNote=''; draftNarrative=''; overrideMode=false;
+  activeSection = 'overview';
+  CURRENT_VIEW='investigation';
+  hideAllViews();
+  document.getElementById('dashHeader').style.display='none';
+  document.getElementById('invHeader').style.display='flex';
+  document.getElementById('investigationView').style.display='grid';
+  renderMain();          // renders panes + nav + content bar
+  showSection('overview');
+  window.scrollTo(0,0);
+}
+function toggleInvNav(){
+  const n=document.getElementById('invNav');
+  if(window.matchMedia('(max-width:1080px)').matches){ n.classList.toggle('expanded'); }
+  else { n.classList.toggle('collapsed'); }
+}
+
+// ===================== DASHBOARD (assigned alerts) =====================
+let dashLayout = 'table';
+let dashPage = 1;
+const DASH_PAGE_SIZE = 8;
+
+// Alerts "assigned" to the signed-in analyst = cases currently resting at a
+// stage this role owns (same scoping used previously for the role queues).
+function assignedAlerts(){
+  return ALERTS.filter(a=> CURRENT_ROLE && CURRENT_ROLE!=='CM' ? alertOwnerRole(a)===CURRENT_ROLE : true);
+}
+function alertStatusText(a){
+  const inv=INV_DATA[a.customer_id];
+  const d=decisions[a.alert_id];
+  if(d) return DECISION_LABELS[d.action] || d.action;
+  if(inv && inv.case_workflow) return inv.case_workflow.outcome;
+  return 'Open';
+}
+function alertScenario(a){
+  return a.rules_triggered.map(r=>{ const rc=RULE_CATALOG.find(x=>x.rule_id===r.rule_id); return rc?rc.name:r.rule_id.replace(/_/g,' '); }).join(' · ');
+}
+function slaClass(s){ s=(s||'').toLowerCase(); if(s.includes('breach')||s.includes('overdue'))return'breach'; if(s.includes('due')||s.includes('warn')||s.includes('approaching'))return'warn'; return'ok'; }
+function scoreColor(v){ return v>=70?'var(--red)':v>=50?'var(--amber)':'var(--teal)'; }
+function prioOf(a){ return (PRIORITY_MAP(a.ai_copilot.confidence_score)||'').toLowerCase(); }
+
+function setDashLayout(l){ dashLayout=l; document.getElementById('dvtTable').classList.toggle('active',l==='table'); document.getElementById('dvtCards').classList.toggle('active',l==='cards'); renderDashboard(); }
+
+function renderDashboard(){
+  // populate status filter options once
+  const statusSel = document.getElementById('dashFilterStatus');
+  if(statusSel && statusSel.options.length<=1){
+    const statuses=[...new Set(assignedAlerts().map(alertStatusText))].sort();
+    statuses.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; statusSel.appendChild(o); });
+  }
+  const term=(document.getElementById('dashSearch').value||'').trim().toLowerCase();
+  const fp=document.getElementById('dashFilterPriority').value;
+  const fs=document.getElementById('dashFilterStatus').value;
+  const fr=document.getElementById('dashFilterRisk').value;
+  const sort=document.getElementById('dashSort').value;
+
+  let rows=assignedAlerts().filter(a=>{
+    if(term && !(a.alert_id.toLowerCase().includes(term)||a.customer_name.toLowerCase().includes(term)||a.customer_id.toLowerCase().includes(term)||alertScenario(a).toLowerCase().includes(term))) return false;
+    if(fp && prioOf(a)!==fp) return false;
+    if(fs && alertStatusText(a)!==fs) return false;
+    if(fr && a.customer_risk_rating!==fr) return false;
+    return true;
+  });
+  const prioRank={critical:0,high:1,medium:2,low:3};
+  rows.sort((a,b)=>{
+    switch(sort){
+      case'score-asc': return a.ai_copilot.confidence_score-b.ai_copilot.confidence_score;
+      case'sla-asc': return (INV_DATA[a.customer_id].sla.remaining_days??999)-(INV_DATA[b.customer_id].sla.remaining_days??999);
+      case'date-desc': return (b.alert_date||'').localeCompare(a.alert_date||'');
+      case'priority': return prioRank[prioOf(a)]-prioRank[prioOf(b)];
+      default: return b.ai_copilot.confidence_score-a.ai_copilot.confidence_score;
+    }
+  });
+
+  // KPIs
+  const all=assignedAlerts();
+  const crit=all.filter(a=>prioOf(a)==='critical'||prioOf(a)==='high').length;
+  const breaching=all.filter(a=>slaClass(INV_DATA[a.customer_id].sla.status)==='breach').length;
+  const openN=all.filter(a=>!decisions[a.alert_id]).length;
+  document.getElementById('dashKpis').innerHTML=`
+    <div class="kpi"><div class="kpi-val">${all.length}</div><div class="kpi-lbl">Assigned</div></div>
+    <div class="kpi crit"><div class="kpi-val">${crit}</div><div class="kpi-lbl">High / Critical</div></div>
+    <div class="kpi warn"><div class="kpi-val">${breaching}</div><div class="kpi-lbl">SLA Breach</div></div>
+    <div class="kpi ok"><div class="kpi-val">${openN}</div><div class="kpi-lbl">Open</div></div>`;
+  document.getElementById('dashAlertCount').textContent=rows.length;
+
+  // pagination
+  const pages=Math.max(1,Math.ceil(rows.length/DASH_PAGE_SIZE));
+  if(dashPage>pages) dashPage=1;
+  const pageRows=rows.slice((dashPage-1)*DASH_PAGE_SIZE, dashPage*DASH_PAGE_SIZE);
+
+  const listEl=document.getElementById('dashList');
+  if(rows.length===0){ listEl.innerHTML=`<div class="dash-empty">No alerts assigned to you match these filters.</div>`; document.getElementById('dashPagination').innerHTML=''; return; }
+
+  if(dashLayout==='table'){
+    listEl.innerHTML=`<table class="dash-table"><thead><tr>
+      <th>Alert ID</th><th>Customer</th><th>Risk</th><th>Score</th><th>Scenario</th><th>Country</th><th>Priority</th><th>SLA</th><th>Status</th><th>Assigned</th><th></th>
+    </tr></thead><tbody>${pageRows.map(a=>{
+      const inv=INV_DATA[a.customer_id]; const sc=a.ai_copilot.confidence_score; const prio=prioOf(a);
+      const sla=inv.sla.status||'—'; const slc=slaClass(sla);
+      return `<tr onclick="openInvestigation('${a.alert_id}')">
+        <td><span class="dash-aid">${a.alert_id}</span></td>
+        <td><div class="dash-cust">${a.customer_name}</div><div class="dash-cust-sub">${a.customer_id}</div></td>
+        <td><span class="pill pill-risk-${a.customer_risk_rating}">${a.customer_risk_rating}</span></td>
+        <td><div class="dash-score" style="color:${scoreColor(sc)}">${sc}</div><div class="dash-scorebar"><i style="width:${sc}%;background:${scoreColor(sc)}"></i></div></td>
+        <td style="max-width:220px">${alertScenario(a)}</td>
+        <td>${a.customer_country}</td>
+        <td><span class="pill pill-${prio}">${prio}</span></td>
+        <td><span class="pill pill-sla-${slc}">${sla}</span></td>
+        <td><span class="pill pill-status">${alertStatusText(a)}</span></td>
+        <td style="white-space:nowrap">${a.alert_date? a.alert_date.slice(0,10):'—'}</td>
+        <td><span class="dash-open-ic">→</span></td>
+      </tr>`;}).join('')}</tbody></table>`;
+  } else {
+    listEl.innerHTML=`<div class="dash-cards">${pageRows.map(a=>{
+      const inv=INV_DATA[a.customer_id]; const sc=a.ai_copilot.confidence_score; const prio=prioOf(a);
+      const sla=inv.sla.status||'—'; const slc=slaClass(sla);
+      return `<div class="acard" onclick="openInvestigation('${a.alert_id}')">
+        <div class="acard-top">
+          <div><div class="acard-aid">${a.alert_id}</div><div class="acard-name">${a.customer_name}</div>
+          <div class="acard-sub">${a.customer_id} · ${a.customer_country}</div></div>
+          <div class="acard-scorebox"><div class="acard-score" style="color:${scoreColor(sc)}">${sc}</div><div class="acard-scorelbl">Risk score</div></div>
+        </div>
+        <div class="acard-meta">
+          <span class="pill pill-risk-${a.customer_risk_rating}">${a.customer_risk_rating} risk</span>
+          <span class="pill pill-${prio}">${prio}</span>
+          <span class="pill pill-sla-${slc}">SLA ${sla}</span>
+        </div>
+        <div class="acard-scenario">${alertScenario(a)}</div>
+        <div class="acard-foot"><span class="pill pill-status">${alertStatusText(a)}</span><span>${a.alert_date? a.alert_date.slice(0,10):'—'}</span></div>
+      </div>`;}).join('')}</div>`;
+  }
+
+  // pagination controls
+  const pg=document.getElementById('dashPagination');
+  if(pages<=1){ pg.innerHTML=''; }
+  else{
+    let h=`<button class="pg-btn" ${dashPage===1?'disabled':''} onclick="dashGo(${dashPage-1})">‹</button>`;
+    for(let i=1;i<=pages;i++){ h+=`<button class="pg-btn ${i===dashPage?'active':''}" onclick="dashGo(${i})">${i}</button>`; }
+    h+=`<button class="pg-btn" ${dashPage===pages?'disabled':''} onclick="dashGo(${dashPage+1})">›</button>`;
+    pg.innerHTML=h;
+  }
+}
+function dashGo(p){ dashPage=p; renderDashboard(); document.getElementById('dashList').scrollIntoView({block:'start',behavior:'smooth'}); }
+
+// ---- Case Management continues below ----
+
+// ---- Case Management : locate an alert and show its status -----------------
+const CM_STATUS_COLORS = {
+  'SAR/STR Filed':        ['#fdeaea','#a32d2d'],
+  'Closed at L1':         ['#eef7f2','#0f6e56'],
+  'Closed at L2':         ['#eef7f2','#0f6e56'],
+};
+function cmStatusColor(outcome){
+  if(CM_STATUS_COLORS[outcome]) return CM_STATUS_COLORS[outcome];
+  if(/SAR/i.test(outcome)) return ['#fdeaea','#a32d2d'];
+  if(/Closed/i.test(outcome)) return ['#eef7f2','#0f6e56'];
+  if(/Returned|Awaiting|progress/i.test(outcome)) return ['#faefd9','#7a5300'];
+  return ['#eaf1fb','#2f5597'];
+}
+function renderCaseMgmt(){
+  const term = (document.getElementById('cmSearch')?document.getElementById('cmSearch').value:'').trim().toLowerCase();
+  const box = document.getElementById('cmResults');
+  if(!term){
+    box.innerHTML = `<div class="cm-empty">Start typing an Alert ID, Customer ID, or customer name to locate a case.</div>`;
+    return;
+  }
+  const hits = ALERTS.filter(a=>
+    a.alert_id.toLowerCase().includes(term) ||
+    a.customer_id.toLowerCase().includes(term) ||
+    a.customer_name.toLowerCase().includes(term)
+  ).slice(0,12);
+  if(hits.length===0){
+    box.innerHTML = `<div class="cm-empty">No case found matching “${term}”.</div>`;
+    return;
+  }
+  box.innerHTML = hits.map(a=>{
+    const inv = INV_DATA[a.customer_id];
+    const wf = inv ? inv.case_workflow : null;
+    if(!wf){ return `<div class="cm-card"><div class="cm-cust">${a.customer_name}</div><div class="cm-meta">${a.alert_id} · no lifecycle data</div></div>`; }
+    const [bg,fg] = cmStatusColor(wf.outcome);
+    const ownerRole = ownerRoleForStage(wf.current_stage);
+    const rail = LC_ORDER.map(st=>{
+      const done = wf.stages_completed.includes(st);
+      const isCur = st===wf.current_stage;
+      const stg = wf.stages.find(s=>s.stage===st);
+      let sub = '';
+      if(stg){ sub = stg.effective_action_label || stg.ai_action_label || ''; }
+      const cls = isCur ? 'current' : (done ? 'done' : '');
+      return `<div class="cm-rail-node ${cls}">
+        <div class="cm-rail-dot">${LC_SHORT[st]}</div>
+        <div class="cm-rail-name">${STAGE_LABELS_JS[st]}</div>
+        <div class="cm-rail-status">${isCur?'◀ current':(done?'passed':'—')}</div>
+      </div>`;
+    }).join('');
+    const sar = wf.sar_filed ? ` · SAR ref available` : '';
+    return `<div class="cm-card">
+      <div class="cm-card-head">
+        <div>
+          <div class="cm-cust">${a.customer_name}</div>
+          <div class="cm-meta">${a.alert_id} · ${a.customer_id} · ${a.customer_country}${sar}</div>
+        </div>
+        <span class="cm-statuspill" style="background:${bg};color:${fg}">${wf.outcome}</span>
+      </div>
+      <div class="cm-loc">📍 Currently at: <b>${wf.current_stage_label}</b> &nbsp;·&nbsp; Owner: <b>${ownerRole?ROLE_LABEL[ownerRole]:'—'}</b> &nbsp;·&nbsp; Risk category: <b>${wf.risk_category||'—'}</b></div>
+      <div class="cm-rail">${rail}</div>
+      <button class="cm-open-btn" onclick="cmOpenCase('${a.alert_id}')">Open full case file →</button>
+    </div>`;
+  }).join('');
+}
+function cmOpenCase(alertId){
+  openInvestigation(alertId);
+}
+
+// ---- Guided demo : one case, L1 -> SAR ------------------------------------
+const DEMO_CUSTOMER = 'CUST0005';   // Sam Kim — high-risk, full chain to SAR
+const DEMO_ALERT = 'ALT-CUST0005';
+const DEMO_LOGIN_FOR_STAGE = {L1_REVIEW:'L1', L1_QC:'L3', L2_REVIEW:'L2', L2_QC:'L3', MLRO_L3:'L3', MLRO_DECISION:'MLRO'};
+let demoIdx = 0;
+
+function startGuidedDemo(){
+  const inv = INV_DATA[DEMO_CUSTOMER];
+  if(!inv || !inv.case_workflow){ alert('Demo case not available in this dataset.'); return; }
+  CURRENT_ROLE = null;
+  demoIdx = 0;
+  document.getElementById('loginGate').style.display='none';
+  document.getElementById('appShell').style.display='block';
+  document.getElementById('userRoleLabel').textContent = 'Guided Demo';
+  document.getElementById('dashNav').innerHTML='';
+  hideAllViews();
+  document.getElementById('demoView').style.display='block';
+  const al = ALERTS.find(a=>a.alert_id===DEMO_ALERT) || ALERTS.find(a=>a.customer_id===DEMO_CUSTOMER);
+  const nm = al ? al.customer_name : DEMO_CUSTOMER;
+  const rs = inv.risk_snapshot;
+  document.getElementById('demoCaseLine').innerHTML =
+    `${DEMO_ALERT} · ${nm} · ${rs.nationality} · ${rs.risk_rating} risk · AI score ${rs.overall_risk_score} · risk category <b>${inv.case_workflow.risk_category||'—'}</b>`;
+  renderDemo();
+}
+function exitGuidedDemo(){
+  document.getElementById('demoView').style.display='none';
+  document.getElementById('appShell').style.display='none';
+  document.getElementById('loginGate').style.display='flex';
+}
+function demoStep(d){
+  const wf = INV_DATA[DEMO_CUSTOMER].case_workflow;
+  demoIdx = Math.max(0, Math.min(wf.stages.length-1, demoIdx+d));
+  renderDemo();
+}
+function renderDemo(){
+  const wf = INV_DATA[DEMO_CUSTOMER].case_workflow;
+  const stages = wf.stages;
+  const s = stages[demoIdx];
+  const h = s.hitl;
+  // rail
+  document.getElementById('demoRail').innerHTML = LC_ORDER.map((st,i)=>{
+    const stg = stages.find(x=>x.stage===st);
+    const idx = stages.findIndex(x=>x.stage===st);
+    let cls='';
+    if(idx===demoIdx) cls='active';
+    else if(idx>-1 && idx<demoIdx) cls='done';
+    else if(idx>-1) cls='';
+    return `<div class="demo-rnode ${cls}" onclick="demoJump(${idx})">
+      <div class="demo-rdot">${LC_SHORT[st]}</div>
+      <div class="demo-rname">${STAGE_LABELS_JS[st]}</div>
+      <div class="demo-rrole">login: ${DEMO_LOGIN_FOR_STAGE[st]}</div>
+    </div>`;
+  }).join('');
+
+  const blocking = h.blocking;
+  const isSar = (s.stage==='MLRO_DECISION');
+  const cardCls = isSar ? 'sar' : (blocking ? 'blocking' : '');
+  const moveBadge = blocking
+    ? `<span class="demo-badge block">Held for human sign-off</span>`
+    : `<span class="demo-badge auto">AI advanced autonomously</span>`;
+  const hitlBadge = h.status==='Overridden'
+    ? `<span class="demo-badge over">Human overrode AI</span>`
+    : `<span class="demo-badge conf">Human confirmed</span>`;
+  const eff = (s.effective_action_label && s.effective_action_label!==s.ai_action_label)
+    ? `<div class="demo-narr"><b>Final disposition after human review:</b> ${s.effective_action_label}</div>` : '';
+  const checklist = `<div class="demo-checklist">${s.checklist.map(c=>`<div class="demo-check">${c}</div>`).join('')}</div>`;
+
+  let intel='';
+  if(s.intelligence){
+    const i=s.intelligence;
+    intel=`<div class="demo-intel">
+      <div><span>Source of funds:</span> ${i.source_of_funds}</div>
+      <div><span>Source of wealth:</span> ${i.source_of_wealth}</div>
+      <div><span>Geographic risk:</span> ${i.geographic_risk}</div>
+      <div><span>Typology match:</span> ${i.typology_match}</div>
+      <div><span>Fraud indicators:</span> ${i.fraud_indicators}</div>
+      <div><span>Recalculated risk:</span> ${i.recalculated_risk_score}</div>
+    </div>`;
+  }
+  let sar='';
+  if(s.sar){
+    const x=s.sar;
+    sar=`<div class="demo-sarbox">
+      <b>${x.filed?'✔ SAR / STR FILED':'No SAR filed'}</b>${x.sar_reference?` · Reference <b>${x.sar_reference}</b>`:''}${x.regulator?` · ${x.regulator}`:''}<br>
+      <span style="color:var(--muted)">${x.narrative}</span>
+    </div>`;
+  }
+
+  document.getElementById('demoStepCard').className = 'demo-stepcard '+cardCls;
+  document.getElementById('demoStepCard').innerHTML = `
+    <div class="demo-stagehead">
+      <div>
+        <div class="demo-stagename">${s.label}</div>
+        <div class="demo-role">Owner: ${s.role} · sign in as <b>${DEMO_LOGIN_FOR_STAGE[s.stage]}/${DEMO_LOGIN_FOR_STAGE[s.stage]}</b> to work this stage</div>
+      </div>
+      <span class="demo-login-pill">Stage ${demoIdx+1} of ${stages.length}</span>
+    </div>
+    <div class="demo-badges">
+      <span class="demo-badge ai">AI: ${s.ai_action_label}</span>
+      ${moveBadge}${hitlBadge}
+    </div>
+    <div class="demo-narr">${s.ai_narrative}</div>
+    ${eff}
+    <div class="demo-hitl"><b>Human-in-the-loop:</b> ${h.human_name} (${h.human_role}) — ${h.status} at ${h.signed_off_at}.<br>${h.note}</div>
+    ${intel}${sar}
+    <details style="margin-top:10px"><summary style="cursor:pointer;font-size:11.5px;color:var(--muted)">Stage checklist (${s.checklist.length} steps from the process map)</summary>${checklist}</details>
+  `;
+
+  document.getElementById('demoPrev').disabled = (demoIdx===0);
+  document.getElementById('demoNext').disabled = (demoIdx===stages.length-1);
+  document.getElementById('demoNext').textContent = (demoIdx===stages.length-2) ? 'Final stage — SAR decision →' : 'Next stage →';
+  document.getElementById('demoProgress').textContent =
+    `${wf.stages_completed.slice(0,demoIdx+1).map(st=>LC_SHORT[st]).join('  →  ')}`;
+}
+function demoJump(i){ if(i>=0){ demoIdx=i; renderDemo(); } }
+function demoOpenFullCase(){
+  // sign the viewer in as the stage's role and open the full case file.
+  const wf = INV_DATA[DEMO_CUSTOMER].case_workflow;
+  const st = wf.stages[demoIdx].stage;
+  CURRENT_ROLE = DEMO_LOGIN_FOR_STAGE[st];
+  const roleTxt = ROLE_LABEL[CURRENT_ROLE] + ' ('+CURRENT_ROLE+')';
+  document.getElementById('userRoleLabel').textContent = roleTxt;
+  document.getElementById('userRoleLabel2').textContent = roleTxt;
+  document.getElementById('dashUserName').textContent = DEMO_ANALYST_NAMES[CURRENT_ROLE] || 'Analyst';
+  document.getElementById('dashUserRole').textContent = ROLE_LABEL[CURRENT_ROLE];
+  document.getElementById('demoView').style.display='none';
+  openInvestigation(DEMO_ALERT);
+}
+const AI_DECISION_CLASS_MAP = {escalate_to_l2:'rec-Escalate', close_false_positive:'rec-Close'};
+const AI_DECISION_ICON_MAP = {escalate_to_l2:'⤴️', close_false_positive:'✅'};
+
+function slug(label){ return label.replace(/\s+/g,'-'); }
+function fmtMoney(n){ return '$' + Number(n).toLocaleString(undefined,{maximumFractionDigits:0}); }
+
+function isCryptoAlert(a){
+  return (a.crypto_transaction_count && a.crypto_transaction_count > 0) ||
+         a.rules_triggered.some(r => ['R04_LOW_BUYER_DIVERSITY','R07_PRIVATE_WALLET_WITHDRAWAL','R10_FREQUENT_CONVERSIONS'].includes(r.rule_id));
+}
+
+function renderStatStrip(){
+  const total = ALERTS.length;
+  const high = ALERTS.filter(a=>a.ai_copilot.confidence_label==='High').length;
+  const crypto = ALERTS.filter(isCryptoAlert).length;
+  const rulesFired = new Set();
+  ALERTS.forEach(a=>a.rules_triggered.forEach(r=>rulesFired.add(r.rule_id)));
+  document.getElementById('statStrip').innerHTML = `
+    <span class="stat-chip"><b>${total}</b> alerts</span>
+    <span class="stat-chip high"><b>${high}</b> high</span>
+    <span class="stat-chip crypto"><b>${crypto}</b> crypto-involved</span>
+    <span class="stat-chip"><b>${rulesFired.size}</b>/${RULE_CATALOG.length} rules firing</span>
+  `;
+}
+
+function renderFilterControls(){
+  const risks = ['all','low','medium','high'];
+  document.getElementById('riskFilterRow').innerHTML = risks.map(r=>
+    `<button class="filter-btn risk-filter-btn ${riskFilter===r?'active':''}" onclick="setRiskFilter('${r}')">
+      <span class="rf-label">${r==='all'?'All risk':r}</span>
+      ${r!=='all' ? `<span class="rf-range">${RISK_SCORE_RANGES[r]}</span>` : ''}
+    </button>`
+  ).join('');
+
+  document.getElementById('ruleChipFilters').innerHTML = RULE_CATALOG.map(r=>
+    `<button class="rule-chip ${activeRuleFilters.has(r.rule_id)?'active':''}" onclick="toggleRuleFilter('${r.rule_id}')" title="${r.name} — ${r.description||''}">${r.rule_id.split('_')[0]}</button>`
+  ).join('');
+
+  renderChannelDropdown();
+}
+
+function renderChannelDropdown(){
+  const wrap = document.getElementById('channelDropdownWrap');
+  const countLabel = activeChannelFilters.size ? ` (${activeChannelFilters.size})` : '';
+  wrap.innerHTML = `
+    <button class="filter-btn channel-toggle" onclick="toggleChannelMenu()">🔀 Transaction channel${countLabel} <span>${channelMenuOpen?'▲':'▼'}</span></button>
+    ${channelMenuOpen ? `<div class="channel-menu">${CHANNELS.map(c=>
+      `<label class="channel-menu-item"><input type="checkbox" ${activeChannelFilters.has(c)?'checked':''} onchange="toggleChannelFilter('${c}')"> ${c}</label>`
+    ).join('')}</div>` : ''}
+  `;
+}
+
+function toggleChannelMenu(){ channelMenuOpen = !channelMenuOpen; renderChannelDropdown(); }
+function toggleChannelFilter(ch){
+  if(activeChannelFilters.has(ch)) activeChannelFilters.delete(ch); else activeChannelFilters.add(ch);
+  renderChannelDropdown(); renderQueue();
+}
+
+function setRiskFilter(r){ riskFilter = r; renderFilterControls(); renderQueue(); }
+function toggleRuleFilter(ruleId){
+  if(activeRuleFilters.has(ruleId)) activeRuleFilters.delete(ruleId); else activeRuleFilters.add(ruleId);
+  renderFilterControls(); renderQueue();
+}
+
+function alertChannels(a){
+  const inv = INV_DATA[a.customer_id];
+  if(!inv) return new Set();
+  return new Set(Object.keys(inv.transaction_analysis.channel_distribution||{}));
+}
+
+function filteredAlerts(){
+  // #searchBox is one of the hidden legacy containers (a <div>, not an <input> --
+  // see "hidden legacy containers" block) kept only so older code referencing it
+  // doesn't throw a ReferenceError. It has no .value, so guard for that explicitly
+  // rather than just checking the element exists -- otherwise .value.trim() throws
+  // a TypeError here, which previously aborted renderQueue() (and anything that
+  // calls it, e.g. submitDecision() right before it writes the audit-log row).
+  const searchEl = document.getElementById('searchBox');
+  const term = (searchEl && typeof searchEl.value === 'string') ? searchEl.value.trim().toLowerCase() : '';
+  return ALERTS.filter(a=>{
+    // role scoping: a signed-in role only sees cases currently resting at a
+    // stage it owns. CM sees everything (handled in its own view, not here).
+    if(CURRENT_ROLE && CURRENT_ROLE!=='CM' && alertOwnerRole(a)!==CURRENT_ROLE) return false;
+    if(term && !(a.customer_name.toLowerCase().includes(term) || a.customer_id.toLowerCase().includes(term) || a.alert_id.toLowerCase().includes(term))) return false;
+    if(riskFilter!=='all' && a.customer_risk_rating!==riskFilter) return false;
+    if(activeRuleFilters.size>0 && !a.rules_triggered.some(r=>activeRuleFilters.has(r.rule_id))) return false;
+    if(activeChannelFilters.size>0){
+      const chans = alertChannels(a);
+      if(![...activeChannelFilters].some(c=>chans.has(c))) return false;
+    }
+    return true;
+  });
+}
+
+function renderQueue(){
+  const list = document.getElementById('queueList');
+  const filtered = [...filteredAlerts()].sort((a,b)=>b.ai_copilot.confidence_score - a.ai_copilot.confidence_score);
+  const roleName = CURRENT_ROLE ? ROLE_LABEL[CURRENT_ROLE] : 'All';
+  document.getElementById('queueHeadLabel').textContent = `${roleName} queue · ${filtered.length} case(s) currently at this stage`;
+
+  if(filtered.length===0){
+    list.innerHTML = `<div style="padding:24px 16px;color:var(--muted);font-size:13px;">No cases are currently at the ${roleName} stage. Cases arrive here as they are escalated through the lifecycle.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(a=>{
+    const ai = a.ai_copilot;
+    const decided = decisions[a.alert_id];
+    const ruleTags = a.rules_triggered.map(r=>r.rule_id.split('_')[0]).join(' · ');
+    const crypto = isCryptoAlert(a);
+    const inv = INV_DATA[a.customer_id];
+    const wfStatus = inv && inv.case_workflow ? inv.case_workflow.outcome : '';
+    return `<div class="qitem ${a.alert_id===selectedId?'active':''} ${decided?'decided':''}" onclick="selectAlert('${a.alert_id}')">
+      <div class="qitem-top">
+        <span class="qitem-id">${a.alert_id}</span>
+        <span class="score-pill lvl-${slug(ai.confidence_label)}">${ai.confidence_score}</span>
+      </div>
+      <div class="qitem-name">${a.customer_name}</div>
+      <div class="qitem-badges">
+        <span class="mini-badge">${a.customer_risk_rating} risk</span>
+        <span class="mini-badge">${a.customer_country}</span>
+        ${crypto ? `<span class="mini-badge crypto">🪙 crypto</span>` : ''}
+      </div>
+      ${wfStatus ? `<div class="qitem-rules" style="color:var(--accent);font-weight:600">${wfStatus}</div>` : ''}
+      <div class="qitem-rules">${ruleTags}</div>
+    </div>`;
+  }).join('');
+
+  if(!filtered.find(a=>a.alert_id===selectedId) && filtered.length>0){
+    selectedId = filtered[0].alert_id;
+  }
+}
+
+function selectAlert(id){
+  selectedId = id;
+  openAccordions = new Set();
+  openRedFlags = new Set();
+  stagedAction = null;
+  draftNote = '';
+  draftNarrative = '';
+  overrideMode = false;
+  renderQueue();
+  renderMain();
+}
+
+function toggleOverride(){
+  overrideMode = !overrideMode;
+  renderMain(true);
+}
+
+function toggleAccordion(ruleId){
+  if(openAccordions.has(ruleId)) openAccordions.delete(ruleId); else openAccordions.add(ruleId);
+  renderMain(true);
+}
+
+function txnRow(t){
+  const dirClass = t.direction==='credit' ? 'dir-credit' : 'dir-debit';
+  const assetClass = t.asset_type==='CRYPTO' ? 'asset-crypto' : '';
+  const walletBadge = t.wallet_type==='private_wallet' ? `<span class="wallet-private">private wallet</span>` :
+                       (t.wallet_type==='exchange_wallet' ? 'exchange' : '—');
+  const amountLabel = t.asset_type==='CRYPTO' ? `${t.currency} ${fmtMoney(t.amount)}` : fmtMoney(t.amount);
+  return `<tr>
+    <td>${t.timestamp}</td>
+    <td class="${dirClass}">${t.direction}</td>
+    <td class="${assetClass}">${amountLabel}</td>
+    <td>${t.channel}</td>
+    <td>${walletBadge}</td>
+    <td>${t.counterparty} (${t.counterparty_country})</td>
+  </tr>`;
+}
+
+/* ================================================================ */
+/* Investigation workspace section builders                          */
+/* Each function returns an HTML string for one collapsible section  */
+/* of the L1 investigation page. All data comes from INV_DATA, keyed */
+/* by customer_id, so it is consistent with the alert/queue data.    */
+/* ================================================================ */
+
+function accItem(sectionId, icon, title, flagHtml, bodyHtml, open){
+  return `<div class="accordion-item">
+    <h2 class="accordion-header" id="heading-${sectionId}">
+      <button class="accordion-button ${open?'':'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${sectionId}" aria-expanded="${open?'true':'false'}" aria-controls="collapse-${sectionId}">
+        <span class="sec-icon">${icon}</span>${title}${flagHtml||''}
+      </button>
+    </h2>
+    <div id="collapse-${sectionId}" class="accordion-collapse collapse ${open?'show':''}" aria-labelledby="heading-${sectionId}">
+      <div class="accordion-body">${bodyHtml}</div>
+    </div>
+  </div>`;
+}
+function flagPill(isY, label){
+  return `<span class="sec-flag ${isY?'flag-y':'flag-n'}">${label||(isY?'Y':'N')}</span>`;
+}
+function statusPillClass(status){
+  const s = (status||'').toLowerCase();
+  if(s.includes('verified') || s.includes('approved') || s==='y') return 'status-verified';
+  if(s.includes('expired') || s.includes('pending') || s.includes('not provided')) return 'status-expired';
+  return 'status-verified';
+}
+function defItem(label, value){
+  return `<div class="def-item"><dt>${label}</dt><dd>${value===undefined||value===null||value===''?'—':value}</dd></div>`;
+}
+
+function buildWorkflowTracker(a, inv, decided){
+  const steps = [
+    {n:1, label:'Triage & Initial Review', sub:'Verify alert, KYC, transaction type', done:true},
+    {n:2, label:'Data Gathering', sub:'12-month history, screening results', done:true},
+    {n:3, label:'Analysis', sub:'Expected vs actual, red flags, AML history', done:true},
+    {n:4, label:'Disposition', sub:'Close / Escalate / Request info', done:!!decided, active:!decided},
+    {n:5, label:'Documentation', sub:'Findings, rationale, evidence', done:!!decided},
+    {n:6, label:'SLA Monitoring', sub:`${inv.sla.status} · ${inv.sla.remaining_days}d remaining`, done:false, active:true},
+  ];
+  const stepsHtml = steps.map(s=>`
+    <div class="wf-step ${s.done?'done':''} ${s.active?'active':''}">
+      <div class="wf-dot">${s.done?'✓':s.n}</div>
+      <div class="wf-label">Step ${s.n} — ${s.label}</div>
+      <div class="wf-sub">${s.sub}</div>
+    </div>`).join('');
+  return `<div class="workflow-panel">
+    <div class="workflow-title">L1 Analyst Workflow</div>
+    <div class="workflow-steps">${stepsHtml}</div>
+  </div>`;
+}
+
+function buildAlertSummary(a, inv, decided){
+  const ai = a.ai_copilot;
+  const priority = PRIORITY_MAP(ai.confidence_score);
+  const tx = inv.transaction_analysis.triggering_transaction || {};
+  const accountNumbers = inv.accounts.map(acc=>acc.account_id).join(', ');
+  const status = decided ? DECISION_LABELS[decided.action] : 'Open — Under Investigation';
+  const rulesList = a.rules_triggered.map(r=>r.rule_id.split('_')[0]).join(', ');
+  return `<div class="panel">
+    <div class="cust-row">
+      <div>
+        <div class="cust-name">${a.customer_name}</div>
+        <div class="cust-meta">${a.customer_id} · ${a.customer_country} · ${a.alert_id} · ${a.transaction_count_in_window} txns in window</div>
+        <div class="cust-flags">
+          <span class="risk-chip risk-${a.customer_risk_rating}">${a.customer_risk_rating} risk</span>
+          <span class="sev-badge sev-${priority}">${priority} priority</span>
+          ${isCryptoAlert(a) ? `<span class="crypto-chip">🪙 ${a.crypto_transaction_count||0} crypto txns</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="def-grid" style="margin-top:18px">
+      ${defItem('Alert ID', a.alert_id)}
+      ${defItem('Alert Type', a.rules_triggered[0]?.name || '—')}
+      ${defItem('Rule(s) Triggered', rulesList)}
+      ${defItem('Priority', priority)}
+      ${defItem('Risk Score', ai.confidence_score)}
+      ${defItem('Customer Name', a.customer_name)}
+      ${defItem('Customer ID', a.customer_id)}
+      ${defItem('Account Number(s)', accountNumbers)}
+      ${defItem('Alert Date', inv.alert_date)}
+      ${defItem('Current Status', status)}
+      ${defItem('Assigned Analyst', inv.assigned_analyst)}
+      ${defItem('Escalation Status', inv.escalation_status)}
+      ${defItem('Transaction Amount', tx.amount!==undefined ? fmtMoney(tx.amount) : '—')}
+      ${defItem('Currency', tx.currency)}
+      ${defItem('Transaction Channel', tx.channel)}
+      ${defItem('Counterparty', tx.counterparty)}
+      ${defItem('Country', tx.country)}
+      ${defItem('Branch', inv.branch)}
+    </div>
+  </div>`;
+}
+
+function toBullets(text){
+  if(!text) return [];
+  // Split on sentence boundaries (". " followed by a capital letter) and on " -- " sub-clauses
+  // so the AI's score-adjustment reasoning reads as scannable bullets instead of one dense paragraph.
+  return text
+    .split(/\.\s+(?=[A-Z])/)
+    .map(s=>s.trim())
+    .filter(Boolean)
+    .map(s=> s.endsWith('.') ? s : s + '.');
+}
+
+function buildAiCopilotSection(a){
+  const ai = a.ai_copilot;
+  const explainMap = {};
+  (ai.rules_explained||[]).forEach(r=>explainMap[r.rule_id]=r.plain_language);
+  const accordionHtml = a.rules_triggered.map(r=>{
+    const open = openAccordions.has(r.rule_id);
+    return `<div class="acc-item ${open?'open':''}">
+      <div class="acc-header" onclick="toggleAccordion('${r.rule_id}')">
+        <div class="acc-header-left">
+          <span class="acc-chevron">▶</span>
+          <span class="acc-rule-id">${r.rule_id.split('_')[0]}</span>
+          <span class="acc-rule-name">${r.name}</span>
+        </div>
+        <span class="acc-weight">weight ${r.weight}</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-body-inner">
+          <div class="acc-plain">${explainMap[r.rule_id] || ''}</div>
+          <div class="acc-evidence">${r.evidence}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const nudgeDirection = ai.confidence_score > ai.base_score ? 'up' : ai.confidence_score < ai.base_score ? 'down' : 'unchanged';
+  const nudgeBullets = toBullets(ai.adjustment_reason);
+  const actionLabelMap = {close_false_positive:'Suggested: close as false positive', escalate_to_l2:'Suggested: escalate to L2 / SAR review'};
+  return `<div class="ai-panel" style="border-radius:9px;padding:16px 18px;">
+    <div class="ai-head"><span class="ai-dot"></span><span class="ai-label">SARA.ai assessment</span></div>
+    <div class="score-row">
+      <div>
+        <div class="score-num">${ai.confidence_score}</div>
+        <div class="score-sub">${ai.confidence_label} confidence</div>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div class="meter"><div class="meter-fill" style="width:${ai.confidence_score}%"></div>
+          <div class="meter-base" style="left:${ai.base_score}%"></div>
+        </div>
+        <div class="adj-note">Rule-based base score: <b>${ai.base_score}</b> → AI-adjusted: <b>${ai.confidence_score}</b></div>
+      </div>
+    </div>
+    <div class="summary-text">${ai.summary}</div>
+    <div class="subhead" style="margin-top:16px">Why the score moved ${nudgeDirection} (${ai.base_score} → ${ai.confidence_score})</div>
+    <ul class="rec-reasons">${nudgeBullets.map(b=>`<li>${b}</li>`).join('')}</ul>
+    <h2 style="margin-top:20px">Rules triggered — click to expand justification</h2>
+    <div class="accordion">${accordionHtml}</div>
+    <div class="action-suggest">${actionLabelMap[ai.suggested_action]}</div>
+  </div>`;
+}
+
+function buildRiskSnapshot(inv){
+  const rs = inv.risk_snapshot;
+  const kpis = [
+    ['Risk Rating', rs.risk_rating.toUpperCase()], ['Customer Type', rs.customer_type],
+    ['Occupation', rs.occupation], ['Nationality', rs.nationality],
+    ['Residence Country', rs.residence_country], ['Industry', rs.industry],
+    ['Years with Bank', rs.years_with_bank], ['Customer Segment', rs.customer_segment],
+    ['Total Accounts', rs.total_accounts], ['Total Alerts', rs.total_alerts],
+    ['Previous SAR Count', rs.previous_sar_count], ['Last Alert Date', rs.last_alert_date],
+    ['Overall Risk Score', rs.overall_risk_score],
+  ];
+  const kpiHtml = kpis.map(([l,v])=>`<div class="kpi-card"><div class="kpi-label">${l}</div><div class="kpi-value ${String(v).length>10?'small':''}">${v}</div></div>`).join('');
+  return `<div class="kpi-grid">${kpiHtml}</div>
+    <div class="subhead">Products Held</div>
+    <div class="cust-flags">${rs.products_held.map(p=>`<span class="risk-chip risk-medium">${p}</span>`).join('')}</div>`;
+}
+
+function buildKyc(inv){
+  const k = inv.kyc;
+  const idRow = (label, doc)=>`<tr><td>${label}</td><td>${doc.number}</td><td>${doc.expiry}</td><td><span class="status-pill ${statusPillClass(doc.status)}">${doc.status}</span></td></tr>`;
+  return `
+    <div class="subhead">Customer Details</div>
+    <div class="def-grid">
+      ${defItem('Full Name', k.full_name)} ${defItem('Date of Birth', k.dob)} ${defItem('Nationality', k.nationality)}
+      ${defItem('Gender', k.gender)} ${defItem('Occupation', k.occupation)} ${defItem('Employer', k.employer)}
+      ${defItem('Income Range', k.income_range)} ${defItem('Annual Turnover', k.annual_turnover)}
+      ${defItem('Source of Wealth', k.source_of_wealth)} ${defItem('Source of Funds', k.source_of_funds)}
+      ${defItem('Tax Residency', k.tax_residency)} ${defItem('Customer Category', k.customer_category)}
+    </div>
+    <div class="subhead">Identification Documents</div>
+    <table class="inv-table"><thead><tr><th>Document</th><th>Number</th><th>Expiry</th><th>Status</th></tr></thead>
+      <tbody>
+        ${idRow('Passport', k.identification.passport)}
+        ${idRow('National ID', k.identification.national_id)}
+        ${idRow('PAN', k.identification.pan)}
+        ${idRow('Driving License', k.identification.driving_license)}
+      </tbody>
+    </table>
+    <div class="subhead">Address</div>
+    <div class="def-grid">
+      ${defItem('Permanent Address', k.address.permanent)}
+      ${defItem('Correspondence Address', k.address.correspondence)}
+      ${defItem('Country', k.address.country)}
+    </div>
+    <div class="subhead">Risk & Review</div>
+    <div class="def-grid">
+      ${defItem('Risk Rating', `<span class="risk-chip risk-${k.risk_rating}">${k.risk_rating}</span>`)}
+      ${defItem('KYC Last Reviewed', k.kyc_last_reviewed)} ${defItem('Next Review Date', k.next_review_date)}
+      ${defItem('Customer Since', k.customer_since)}
+      ${defItem('CDD Status', `<span class="status-pill ${statusPillClass(k.cdd_status)}">${k.cdd_status}</span>`)}
+      ${defItem('EDD Required', `<span class="status-pill ${k.edd_required==='Y'?'status-flagged':'status-verified'}">${k.edd_required}</span>`)}
+    </div>
+    <div class="subhead">Device / Access Information (most recent)</div>
+    <div class="def-grid">
+      ${defItem('Device IP', k.recent_access.device_ip)}
+      ${defItem('Device Location', k.recent_access.device_location)}
+      ${defItem('Country of Access', k.recent_access.country_of_access)}
+      ${defItem('Device Type', k.recent_access.device_type)}
+      ${defItem('Last Access Time', k.recent_access.last_access_time)}
+    </div>
+    <p class="rationale-note">Full login/device history is in the Account Operations section below.</p>`;
+}
+
+function monthLabel(ym){
+  const [y,m] = ym.split('-');
+  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${names[parseInt(m,10)-1]} ${y}`;
+}
+
+/* Transaction-history granularity slider: Yearly -> Half-Yearly -> Quarterly -> Monthly -> Daily.
+   Aggregates the raw (daily) transaction history client-side, since that is the
+   finest-grained data available -- every coarser bucket is derived from it. */
+const PERIOD_STEPS = ['yearly','half-yearly','quarterly','monthly','daily'];
+const PERIOD_LABELS = {yearly:'Yearly', 'half-yearly':'Half-Yearly', quarterly:'Quarterly', monthly:'Monthly', daily:'Daily'};
+let txnPeriod = 'yearly';
+
+function periodBucketKey(dateStr, period){
+  const d = new Date(dateStr + 'T00:00:00Z');
+  const y = d.getUTCFullYear(), m = d.getUTCMonth();
+  if(period==='daily') return dateStr;
+  if(period==='monthly') return dateStr.slice(0,7);
+  if(period==='quarterly') return `${y}-Q${Math.floor(m/3)+1}`;
+  if(period==='half-yearly') return `${y}-H${m<6?1:2}`;
+  return String(y);
+}
+function periodBucketLabel(key, period){
+  return period==='monthly' ? monthLabel(key) : key;
+}
+function aggregateHistoryByPeriod(history, period){
+  const buckets = {};
+  history.forEach(t=>{
+    const key = periodBucketKey(t.date, period);
+    if(!buckets[key]) buckets[key] = {count:0, value:0};
+    buckets[key].count += 1;
+    buckets[key].value += t.amount;
+  });
+  const keys = Object.keys(buckets).sort();
+  return {keys, labels: keys.map(k=>periodBucketLabel(k, period)),
+           volume: keys.map(k=>buckets[k].count), value: keys.map(k=>buckets[k].value)};
+}
+
+function onTxnPeriodChange(idx, alertId){
+  idx = Number(idx);
+  txnPeriod = PERIOD_STEPS[idx];
+  const ticksEl = document.getElementById(`txnTicks-${alertId}`);
+  if(ticksEl) [...ticksEl.children].forEach((el,i)=>el.classList.toggle('active', i===idx));
+  const sliderEl = document.getElementById(`txnSlider-${alertId}`);
+  if(sliderEl) sliderEl.value = idx;
+  const a = ALERTS.find(x=>x.alert_id===alertId);
+  const inv = INV_DATA[a.customer_id];
+  renderTrendCharts(inv, alertId);
+}
+
+function chartDetailList(pairs, formatValue){
+  // Small always-visible legend/detail row under each chart — shows the same
+  // numbers as the chart itself, so the underlying data is legible even
+  // without hovering (and even if the Chart.js CDN is blocked).
+  return `<div class="chart-detail">${pairs.map(([label,val])=>
+    `<span class="chart-detail-item"><b>${label}</b>${formatValue(val)}</span>`).join('')}</div>`;
+}
+
+function historyRow(t){
+  const flags = (t.risk_indicators && t.risk_indicators.length) ? t.risk_indicators : (t.risk_indicator!=='-' ? [t.risk_indicator] : []);
+  const flagHtml = flags.length ? flags.map(f=>`<span class="status-pill status-flagged" style="margin-right:4px">${f}</span>`).join('') : '—';
+  return `<tr>
+    <td>${t.date}</td><td>${fmtMoney(t.amount)} ${t.currency}</td>
+    <td class="${t.direction==='credit'?'dir-credit':'dir-debit'}">${t.direction}</td>
+    <td>${t.counterparty}</td><td>${t.country}</td><td>${t.channel}</td><td>${t.purpose}</td>
+    <td>${flagHtml}</td>
+  </tr>`;
+}
+
+const HISTORY_FILTER_COLS = ['date','amount','direction','counterparty','country','channel','purpose','risk_indicator'];
+// Exact-match dropdown columns (options come verbatim from the data, e.g. "Near CTR
+// threshold") must not be lowercased -- only the free-text substring-search columns should be.
+const HISTORY_FILTER_EXACT_COLS = new Set(['direction','channel','risk_indicator']);
+
+function historyFilterValues(alertId){
+  const vals = {};
+  HISTORY_FILTER_COLS.forEach(col=>{
+    const el = document.getElementById(`txnFilter-${alertId}-${col}`);
+    if(!el){ vals[col] = ''; return; }
+    const raw = el.value.trim();
+    vals[col] = HISTORY_FILTER_EXACT_COLS.has(col) ? raw : raw.toLowerCase();
+  });
+  return vals;
+}
+
+function filterHistoryTable(alertId){
+  const a = ALERTS.find(x=>x.alert_id===alertId);
+  const inv = INV_DATA[a.customer_id];
+  const ta = inv.transaction_analysis;
+  const f = historyFilterValues(alertId);
+  const filtered = ta.history.filter(t=>{
+    if(f.date && !t.date.toLowerCase().includes(f.date)) return false;
+    if(f.amount && !String(t.amount).includes(f.amount)) return false;
+    if(f.direction && t.direction!==f.direction) return false;
+    if(f.counterparty && !t.counterparty.toLowerCase().includes(f.counterparty)) return false;
+    if(f.country && !t.country.toLowerCase().includes(f.country)) return false;
+    if(f.channel && t.channel!==f.channel) return false;
+    if(f.purpose && !t.purpose.toLowerCase().includes(f.purpose)) return false;
+    if(f.risk_indicator && t.risk_indicator!==f.risk_indicator) return false;
+    return true;
+  });
+  const bodyEl = document.getElementById(`txnHistoryBody-${alertId}`);
+  if(bodyEl) bodyEl.innerHTML = filtered.map(historyRow).join('') ||
+    `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:16px">No transactions match the current filters.</td></tr>`;
+  const countEl = document.getElementById(`txnHistoryCount-${alertId}`);
+  if(countEl) countEl.textContent = `${filtered.length} of ${ta.history.length} shown`;
+}
+
+function historyFilterSelect(alertId, col, options, label){
+  return `<select id="txnFilter-${alertId}-${col}" onchange="filterHistoryTable('${alertId}')">
+    <option value="">${label}</option>
+    ${options.map(o=>`<option value="${o}">${o}</option>`).join('')}
+  </select>`;
+}
+function historyFilterInput(alertId, col, placeholder){
+  return `<input type="text" id="txnFilter-${alertId}-${col}" placeholder="${placeholder}" oninput="filterHistoryTable('${alertId}')">`;
+}
+
+function buildTransactionAnalysis(inv, alertId){
+  const ta = inv.transaction_analysis;
+  const tx = ta.triggering_transaction || {};
+  const rows = ta.history.map(historyRow).join('');
+  const directions = [...new Set(ta.history.map(t=>t.direction))].sort();
+  const channels = [...new Set(ta.history.map(t=>t.channel))].sort();
+  const riskIndicators = [...new Set(ta.history.map(t=>t.risk_indicator).filter(r=>r!=='-'))].sort();
+
+  const totalTxns = ta.history.length;
+  const totalValue = ta.history.reduce((s,t)=>s+t.amount,0);
+  const countryEntries = Object.entries(ta.country_distribution).sort((a,b)=>b[1]-a[1]);
+  const countryDetail = chartDetailList(countryEntries, v=>`: ${v} (${Math.round(v/totalTxns*100)}%)`);
+  const channelEntries = Object.entries(ta.channel_distribution).sort((a,b)=>b[1]-a[1]);
+  const channelDetail = chartDetailList(channelEntries, v=>`: ${v} (${Math.round(v/totalTxns*100)}%)`);
+  const periodIdx = PERIOD_STEPS.indexOf(txnPeriod);
+
+  return `
+    <div class="subhead">Current Triggering Transaction</div>
+    <div class="def-grid">
+      ${defItem('Date', tx.date)} ${defItem('Amount', tx.amount!==undefined?fmtMoney(tx.amount)+' '+tx.currency:'—')}
+      ${defItem('Direction', tx.direction)} ${defItem('Counterparty', tx.counterparty)}
+      ${defItem('Country', tx.country)} ${defItem('Channel', tx.channel)}
+      ${defItem('Purpose', tx.purpose)} ${defItem('Risk Indicator', tx.risk_indicator)}
+    </div>
+    <div class="subhead">Transaction History Trend <span id="txnSummary-${alertId}" style="font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0">— ${totalTxns} txns totalling ${fmtMoney(totalValue)}</span></div>
+    <div class="txn-slider-wrap">
+      <input type="range" min="0" max="4" step="1" value="${periodIdx}" class="txn-slider" id="txnSlider-${alertId}" oninput="onTxnPeriodChange(this.value,'${alertId}')">
+      <div class="txn-slider-ticks" id="txnTicks-${alertId}">
+        ${PERIOD_STEPS.map((p,i)=>`<span class="txn-tick ${p===txnPeriod?'active':''}">${PERIOD_LABELS[p]}</span>`).join('')}
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-box"><h4>Transaction volume</h4><div class="chart-canvas-wrap"><canvas id="chart-vol-${alertId}"></canvas></div><div id="vol-detail-${alertId}"></div></div>
+      <div class="chart-box"><h4>Transaction value</h4><div class="chart-canvas-wrap"><canvas id="chart-val-${alertId}"></canvas></div><div id="val-detail-${alertId}"></div></div>
+      <div class="chart-box"><h4>Counterparty country distribution</h4><div class="chart-canvas-wrap"><canvas id="chart-country-${alertId}"></canvas></div>${countryDetail}</div>
+      <div class="chart-box"><h4>Channel distribution</h4><div class="chart-canvas-wrap"><canvas id="chart-channel-${alertId}"></canvas></div>${channelDetail}</div>
+    </div>
+    <div class="subhead">Transaction Pivot Table</div>
+    <div class="pivot-controls">
+      <label>Rows: ${pivotSelect(alertId,'rowDim',['channel','direction','country','risk_indicator','purpose'],'channel')}</label>
+      <label>Columns: ${pivotSelect(alertId,'colDim',['none','channel','direction','country','risk_indicator'],'direction')}</label>
+      <label>Metric: ${pivotSelect(alertId,'metric',['count','sum_amount','avg_amount'],'count')}</label>
+    </div>
+    <div id="pivotTableArea-${alertId}"></div>
+    <div class="subhead">Transaction History (last 12 months, <span id="txnHistoryCount-${alertId}">${ta.history.length} of ${ta.history.length} shown</span>)</div>
+    <div class="table-scroll"><table class="inv-table">
+      <thead>
+        <tr><th>Date</th><th>Amount</th><th>Dir</th><th>Counterparty</th><th>Country</th><th>Channel</th><th>Purpose</th><th>Risk Indicator</th></tr>
+        <tr class="txn-filter-row">
+          <th>${historyFilterInput(alertId,'date','Filter…')}</th>
+          <th>${historyFilterInput(alertId,'amount','Filter…')}</th>
+          <th>${historyFilterSelect(alertId,'direction',directions,'All')}</th>
+          <th>${historyFilterInput(alertId,'counterparty','Filter…')}</th>
+          <th>${historyFilterInput(alertId,'country','Filter…')}</th>
+          <th>${historyFilterSelect(alertId,'channel',channels,'All')}</th>
+          <th>${historyFilterInput(alertId,'purpose','Filter…')}</th>
+          <th>${historyFilterSelect(alertId,'risk_indicator',riskIndicators,'All')}</th>
+        </tr>
+      </thead>
+      <tbody id="txnHistoryBody-${alertId}">${rows}</tbody>
+    </table></div>`;
+}
+
+const pivotState = {}; // alertId -> {rowDim, colDim, metric}
+const PIVOT_DIM_LABELS = {channel:'Channel', direction:'Direction', country:'Country', risk_indicator:'Risk Indicator', purpose:'Purpose', none:'—'};
+
+function getPivotState(alertId){
+  if(!pivotState[alertId]) pivotState[alertId] = {rowDim:'channel', colDim:'direction', metric:'count'};
+  return pivotState[alertId];
+}
+
+function pivotSelect(alertId, field, options, fallback){
+  const st = getPivotState(alertId);
+  const current = st[field] || fallback;
+  const opts = options.map(o=>`<option value="${o}" ${o===current?'selected':''}>${PIVOT_DIM_LABELS[o]||o}</option>`).join('');
+  return `<select onchange="updatePivot('${alertId}','${field}',this.value)">${opts}</select>`;
+}
+
+function updatePivot(alertId, field, value){
+  getPivotState(alertId)[field] = value;
+  const inv = INV_DATA[currentCustomerId(alertId)];
+  if(inv) renderPivot(inv, alertId);
+}
+
+function currentCustomerId(alertId){
+  const a = ALERTS.find(x=>x.alert_id===alertId);
+  return a ? a.customer_id : null;
+}
+
+function renderPivot(inv, alertId){
+  const area = document.getElementById(`pivotTableArea-${alertId}`);
+  if(!area) return;
+  const st = getPivotState(alertId);
+  const history = inv.transaction_analysis.history;
+  const rowKeys = [...new Set(history.map(t=>t[st.rowDim]))].sort();
+  const colKeys = st.colDim==='none' ? ['Total'] : [...new Set(history.map(t=>t[st.colDim]))].sort();
+
+  const cell = (r, c) => {
+    const rows = history.filter(t=> t[st.rowDim]===r && (st.colDim==='none' || t[st.colDim]===c));
+    if(st.metric==='count') return rows.length;
+    const sum = rows.reduce((s,t)=>s+t.amount,0);
+    if(st.metric==='sum_amount') return sum;
+    return rows.length ? sum/rows.length : 0;
+  };
+  const fmtCell = v => st.metric==='count' ? v : fmtMoney(Math.round(v));
+
+  const headerCells = colKeys.map(c=>`<th>${c}</th>`).join('');
+  const bodyRows = rowKeys.map(r=>{
+    const cells = colKeys.map(c=>`<td>${fmtCell(cell(r,c))}</td>`).join('');
+    const rowTotal = colKeys.reduce((s,c)=>s + cell(r,c),0);
+    return `<tr><td><b>${r}</b></td>${cells}${st.colDim!=='none' ? `<td><b>${fmtCell(rowTotal)}</b></td>` : ''}</tr>`;
+  }).join('');
+  const grandTotalRow = st.colDim!=='none' ? `<tr><td><b>Total</b></td>${colKeys.map(c=>{
+      const colTotal = rowKeys.reduce((s,r)=>s + cell(r,c),0);
+      return `<td><b>${fmtCell(colTotal)}</b></td>`;
+    }).join('')}<td><b>${fmtCell(history.reduce((s,t)=>s+(st.metric==='count'?1:t.amount),0)/(st.metric==='avg_amount'?history.length||1:1))}</b></td></tr>` : '';
+
+  area.innerHTML = `<div class="table-scroll"><table class="inv-table pivot-table">
+    <thead><tr><th>${PIVOT_DIM_LABELS[st.rowDim]}</th>${headerCells}${st.colDim!=='none' ? '<th>Total</th>' : ''}</tr></thead>
+    <tbody>${bodyRows}${grandTotalRow}</tbody>
+  </table></div>`;
+}
+
+function renderTrendCharts(inv, alertId){
+  const ta = inv.transaction_analysis;
+  const agg = aggregateHistoryByPeriod(ta.history, txnPeriod);
+  const totalTxns = ta.history.length;
+  const totalValue = ta.history.reduce((s,t)=>s+t.amount,0);
+
+  const summaryEl = document.getElementById(`txnSummary-${alertId}`);
+  if(summaryEl) summaryEl.textContent = `— ${totalTxns} txns totalling ${fmtMoney(totalValue)}, shown ${PERIOD_LABELS[txnPeriod].toLowerCase()}`;
+
+  const volDetailEl = document.getElementById(`vol-detail-${alertId}`);
+  if(volDetailEl) volDetailEl.innerHTML = chartDetailList(agg.keys.map((k,i)=>[agg.labels[i], agg.volume[i]]), v=>`: ${v} txns`);
+  const valDetailEl = document.getElementById(`val-detail-${alertId}`);
+  if(valDetailEl) valDetailEl.innerHTML = chartDetailList(agg.keys.map((k,i)=>[agg.labels[i], agg.value[i]]), v=>`: ${fmtMoney(v)}`);
+
+  if(typeof Chart === 'undefined') return; // Chart.js CDN unreachable — the detail lists still show the same numbers
+  const destroy = id=>{ if(chartInstances[id]){ chartInstances[id].destroy(); delete chartInstances[id]; } };
+  const volId = `chart-vol-${alertId}`, valId = `chart-val-${alertId}`;
+  [volId,valId].forEach(destroy);
+
+  const volCtx = document.getElementById(volId);
+  if(volCtx) chartInstances[volId] = new Chart(volCtx, {type:'bar', data:{labels:agg.labels, datasets:[{label:'Transactions', data:agg.volume, backgroundColor:'#4f6bff', borderRadius:4}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(ctx)=>`${ctx.parsed.y} transactions`}}}, scales:{y:{beginAtZero:true, title:{display:true,text:'Transactions',font:{size:10}}}}}});
+
+  const valCtx = document.getElementById(valId);
+  if(valCtx) chartInstances[valId] = new Chart(valCtx, {type:'line', data:{labels:agg.labels, datasets:[{label:'Value', data:agg.value, borderColor:'#0b8f70', backgroundColor:'rgba(11,143,112,.12)', fill:true, tension:.3, pointRadius:4, pointBackgroundColor:'#0b8f70'}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:(ctx)=>fmtMoney(ctx.parsed.y)}}}, scales:{y:{beginAtZero:true, title:{display:true,text:'USD equivalent',font:{size:10}}, ticks:{callback:(v)=>'$'+v.toLocaleString()}}}}});
+}
+
+function renderDistributionCharts(inv, alertId){
+  if(typeof Chart === 'undefined') return;
+  const ta = inv.transaction_analysis;
+  const destroy = id=>{ if(chartInstances[id]){ chartInstances[id].destroy(); delete chartInstances[id]; } };
+  const palette = ['#4f6bff','#0b8f70','#a3620a','#c22e3d','#7c3aed','#2d3e6b','#14b891','#e0a83f'];
+
+  const ctryId = `chart-country-${alertId}`, chanId = `chart-channel-${alertId}`;
+  [ctryId,chanId].forEach(destroy);
+
+  const countries = Object.keys(ta.country_distribution);
+  const countryTotal = countries.reduce((s,c)=>s+ta.country_distribution[c],0);
+  const ctryCtx = document.getElementById(ctryId);
+  if(ctryCtx) chartInstances[ctryId] = new Chart(ctryCtx, {type:'doughnut', data:{labels:countries, datasets:[{data:countries.map(c=>ta.country_distribution[c]), backgroundColor:palette}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:11,font:{size:10}}}, tooltip:{callbacks:{label:(ctx)=>`${ctx.label}: ${ctx.parsed} (${Math.round(ctx.parsed/countryTotal*100)}%)`}}}}});
+
+  const channels = Object.keys(ta.channel_distribution);
+  const channelTotal = channels.reduce((s,c)=>s+ta.channel_distribution[c],0);
+  const chanCtx = document.getElementById(chanId);
+  if(chanCtx) chartInstances[chanId] = new Chart(chanCtx, {type:'pie', data:{labels:channels, datasets:[{data:channels.map(c=>ta.channel_distribution[c]), backgroundColor:palette}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:11,font:{size:10}}}, tooltip:{callbacks:{label:(ctx)=>`${ctx.label}: ${ctx.parsed} (${Math.round(ctx.parsed/channelTotal*100)}%)`}}}}});
+}
+
+function renderCharts(inv, alertId){
+  renderTrendCharts(inv, alertId);
+  renderDistributionCharts(inv, alertId);
+}
+
+function buildHistoricalBehaviour(inv){
+  const hb = inv.historical_behaviour;
+  const devClass = (exp, act)=> act>exp*1.5 ? 'dev' : '';
+  return `
+    <div class="compare-grid">
+      <div class="compare-card"><div class="cc-label">Monthly Credits</div>
+        <div class="compare-row"><span class="exp">Expected</span><span class="act">${fmtMoney(hb.expected_monthly_credit)}</span></div>
+        <div class="compare-row"><span class="exp">Actual</span><span class="act ${devClass(hb.expected_monthly_credit, hb.actual_monthly_credit)}">${fmtMoney(hb.actual_monthly_credit)}</span></div>
+      </div>
+      <div class="compare-card"><div class="cc-label">Monthly Transfers</div>
+        <div class="compare-row"><span class="exp">Expected</span><span class="act">${hb.expected_monthly_transfers}</span></div>
+        <div class="compare-row"><span class="exp">Actual</span><span class="act ${devClass(hb.expected_monthly_transfers, hb.actual_monthly_transfers)}">${hb.actual_monthly_transfers}</span></div>
+      </div>
+      <div class="compare-card"><div class="cc-label">Countries</div>
+        <div class="compare-row"><span class="exp">Expected</span><span class="act">${hb.expected_countries.join(', ')}</span></div>
+        <div class="compare-row"><span class="exp">Observed</span><span class="act ${hb.observed_countries.length>1?'dev':''}">${hb.observed_countries.join(', ')}</span></div>
+      </div>
+    </div>
+    ${hb.deviation_flags.length ? `<ul class="deviation-list">${hb.deviation_flags.map(d=>`<li>${d}</li>`).join('')}</ul>` : `<p class="rationale-note" style="margin-top:14px">No material deviations from expected behaviour identified.</p>`}`;
+}
+
+function buildAmlHistory(inv){
+  const h = inv.aml_history;
+  const invRows = h.previous_investigations.map(p=>`<tr><td>${p.alert_id}</td><td>${p.rule}</td><td>${p.date}</td><td>${p.outcome}</td><td>${p.investigator}</td><td>${p.case_number}</td></tr>`).join('');
+  const acctRows = h.account_history.map(a=>`<tr><td>${a.account_id}</td><td>${a.relationship_type}</td><td>${a.joint_account}</td><td>${a.beneficiaries.join(', ')||'—'}</td><td>${a.linked_customers.join(', ')||'—'}</td><td>${a.account_description}</td></tr>`).join('');
+  const sarRows = (h.sar_details||[]).map(s=>`<tr><td>${s.case_number}</td><td>${s.date_filed}</td><td>${s.related_rule}</td><td>${s.investigator}</td></tr>`).join('');
+  return `
+    <div class="subhead">History Available: ${flagPill(h.history_available==='Y')}</div>
+    ${h.previous_investigations.length ? `
+    <table class="inv-table"><thead><tr><th>Alert ID</th><th>Rule</th><th>Date</th><th>Outcome</th><th>Investigator</th><th>Case Number</th></tr></thead>
+      <tbody>${invRows}</tbody></table>` : `<p class="rationale-note">No previous AML investigations on file.</p>`}
+    <div class="subhead">SAR Raised Against This Customer/Entity: ${flagPill(h.sar_raised==='Y')}</div>
+    ${h.sar_raised==='Y' ? `
+    <table class="inv-table"><thead><tr><th>SAR Case Number</th><th>Date Filed</th><th>Related Rule</th><th>Filed By</th></tr></thead>
+      <tbody>${sarRows}</tbody></table>` : `<p class="rationale-note">No Suspicious Activity Report has been filed against this customer/entity.</p>`}
+    <div class="subhead">Account AML History</div>
+    <table class="inv-table"><thead><tr><th>Account</th><th>Relationship</th><th>Joint?</th><th>Beneficiaries</th><th>Linked Customers</th><th>Description</th></tr></thead>
+      <tbody>${acctRows}</tbody></table>`;
+}
+
+function buildUserEntity(inv){
+  const u = inv.user_entity;
+  const rows = u.entity_type === 'Corporate / Business' ? `
+    ${defItem('Entity Type', u.entity_type)}
+    ${defItem('Legal Entity Name', u.legal_entity_name)}
+    ${defItem('Registration Number', u.registration_number)}
+    ${defItem('Incorporation Date', u.incorporation_date)}
+    ${defItem('Entity Structure', u.entity_structure)}
+    ${defItem('Transacting Country', u.transacting_country)}
+    ${defItem('Registered Jurisdiction', u.registered_jurisdiction)}
+  ` : `
+    ${defItem('Entity Type', u.entity_type)}
+    ${defItem('Citizenship', u.citizenship)}
+    ${defItem('Residency Status', u.residency_status)}
+    ${defItem('Tax Identification Number', u.tax_identification_number)}
+    ${defItem('Transacting Country', u.transacting_country)}
+    ${defItem('Registered Jurisdiction', u.registered_jurisdiction)}
+  `;
+  return `
+    <div class="subhead">Jurisdiction Mismatch: ${flagPill(u.jurisdiction_mismatch==='Y')}</div>
+    <div class="def-grid">${rows}</div>
+    ${u.note ? `<p class="rationale-note">${u.note}</p>` : ''}`;
+}
+
+function buildAccountOperations(inv){
+  const ops = inv.account_operations;
+  const rows = ops.sessions.map(s=>`<tr class="${s.is_anomalous_location?'row-flagged':''}">
+      <td>${s.device_id}${s.is_new_device?' <span class="status-pill status-flagged" style="font-size:9.5px">New device</span>':''}</td>
+      <td>${s.device_type}</td>
+      <td>${s.ip_address}</td>
+      <td>${s.login_time}</td>
+      <td>${s.login_country}${s.is_anomalous_location?' <span class="status-pill status-flagged" style="font-size:9.5px">Unexpected location</span>':''}</td>
+    </tr>`).join('');
+  return `
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-value">${ops.total_sessions}</div><div class="kpi-label">Total Login Sessions</div></div>
+      <div class="kpi-card"><div class="kpi-value">${ops.distinct_devices}</div><div class="kpi-label">Distinct Devices</div></div>
+      <div class="kpi-card"><div class="kpi-value">${ops.distinct_login_countries}</div><div class="kpi-label">Distinct Login Countries</div></div>
+      <div class="kpi-card"><div class="kpi-value">${ops.anomalous_login_count}</div><div class="kpi-label">Anomalous Logins</div></div>
+    </div>
+    <div class="subhead">Recent Login / Device Activity</div>
+    <table class="inv-table"><thead><tr><th>Device ID</th><th>Device Type</th><th>IP Address</th><th>Login Time</th><th>Login Country</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    <p class="rationale-note">Showing the most recent ${ops.sessions.length} of ${ops.total_sessions} sessions in the analysis window. Rows highlighted in amber logged in from a country other than the customer's registered jurisdiction or transacting country.</p>`;
+}
+
+function buildPep(inv){
+  const p = inv.pep_screening;
+  const rows = p.matches.map(m=>`<tr><td>${m.person_name}</td><td>${m.position}</td><td>${m.country}</td><td>${m.relationship_type}</td><td>${m.match_score}%</td><td>${m.screening_date}</td><td>${m.source}</td></tr>`).join('');
+  return `<div class="subhead">PEP Flag: ${flagPill(p.pep_flag==='Y')}</div>
+    ${p.matches.length ? `<table class="inv-table"><thead><tr><th>Person</th><th>Position</th><th>Country</th><th>Relationship</th><th>Match Score</th><th>Screening Date</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="rationale-note">No PEP matches identified.</p>`}`;
+}
+
+function buildSanctions(inv){
+  const s = inv.sanctions_screening;
+  const rows = s.matches.map(m=>`<tr><td>${m.list_name}</td><td>${m.match_percent}%</td><td>${m.alias}</td><td>${m.country}</td><td>${m.screening_date}</td><td>${m.source}</td></tr>`).join('');
+  return `<div class="subhead">Sanctions Match: ${flagPill(s.sanctions_match==='Y')}</div>
+    ${s.matches.length ? `<table class="inv-table"><thead><tr><th>List</th><th>Match %</th><th>Alias</th><th>Country</th><th>Screening Date</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="rationale-note">No sanctions list matches identified.</p>`}`;
+}
+
+function buildOsint(inv){
+  const o = inv.osint;
+  const cards = o.articles.map(a=>`<div class="osint-card">
+    <div class="osint-head"><span>${a.publication}</span><span>${a.date}</span></div>
+    <div class="osint-headline">${a.headline}</div>
+    <div class="osint-summary">${a.summary}</div>
+    <div class="osint-tags">
+      <span class="osint-tag sentiment-${a.sentiment}">${a.sentiment}</span>
+      ${a.tags.map(t=>`<span class="osint-tag">${t}</span>`).join('')}
+    </div>
+  </div>`).join('');
+  return `<div class="subhead">Negative News Identified: ${flagPill(o.negative_news==='Y', `${o.negative_news} (${o.negative_article_count})`)}</div>
+    <div class="osint-grid">${cards}</div>`;
+}
+
+function buildUbo(inv){
+  if(!inv.ubo) return `<p class="rationale-note">Not applicable — retail / individual customer, no beneficial ownership structure to disclose.</p>`;
+  const u = inv.ubo;
+  const nodes = u.shareholders.map(s=>`<div class="ubo-node">
+      <div class="ubo-name">${s.shareholder}</div>
+      <div class="ubo-pct">${s.ownership_percent}%</div>
+      <div style="font-size:11px;color:var(--muted)">${s.country}</div>
+      <div class="ubo-flags">
+        <span class="risk-chip risk-${s.risk_rating}" style="font-size:9.5px;padding:1px 6px">${s.risk_rating}</span>
+        ${s.pep_flag==='Y' ? `<span class="status-pill status-flagged" style="font-size:9.5px">PEP</span>` : ''}
+        ${s.sanctions_flag==='Y' ? `<span class="status-pill status-flagged" style="font-size:9.5px">Sanctions</span>` : ''}
+      </div>
+    </div>`).join('');
+  const rows = u.shareholders.map(s=>`<tr><td>${s.shareholder}</td><td>${s.ownership_percent}%</td><td>${s.country}</td><td>${s.risk_rating}</td><td>${s.pep_flag}</td><td>${s.sanctions_flag}</td></tr>`).join('');
+  return `
+    <div class="ubo-tree">
+      <div class="ubo-root">${u.entity_name}</div>
+      <div class="ubo-connector"></div>
+      <div class="ubo-branches">${nodes}</div>
+    </div>
+    <table class="inv-table"><thead><tr><th>Shareholder</th><th>Ownership %</th><th>Country</th><th>Risk Rating</th><th>PEP</th><th>Sanctions</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+const HIGH_RISK_COUNTRIES_CLIENT = ['IR','KP','MM','SY'];
+// Predicate per red-flag key, matched against inv.transaction_analysis.history rows.
+// Flags without an entry here (rapid_movement, layering, dormant_account,
+// unrelated_third_party, shell_company, velocity, cross_border) reflect a pattern across
+// the whole window/account structure rather than any single transaction, so there's no
+// single-row predicate to show -- the drill-down explains that instead.
+const RED_FLAG_MATCHERS = {
+  round_amounts: t => t.amount % 500 === 0 && t.amount >= 2000,
+  structuring: t => (t.risk_indicators||[]).includes('Near CTR threshold') || t.risk_indicator==='Near CTR threshold',
+  cash_intensive: t => t.channel === 'cash',
+  large_cash: t => t.channel === 'cash' && t.amount > 8000,
+  high_risk_jurisdiction: t => HIGH_RISK_COUNTRIES_CLIENT.includes(t.country),
+  crypto_exposure: t => t.channel === 'crypto',
+};
+let openRedFlags = new Set(); // flag keys currently expanded, reset on selectAlert
+
+function toggleRedFlag(key){
+  if(openRedFlags.has(key)) openRedFlags.delete(key); else openRedFlags.add(key);
+  renderMain(true);
+}
+
+function buildRedFlags(inv){
+  const history = inv.transaction_analysis.history;
+  const cards = inv.red_flags.map(f=>{
+    const isOpen = openRedFlags.has(f.key);
+    const matcher = RED_FLAG_MATCHERS[f.key];
+    let bodyHtml = '';
+    if(isOpen){
+      if(matcher){
+        const matches = history.filter(matcher);
+        bodyHtml = matches.length
+          ? `<div class="table-scroll"><table class="inv-table"><thead><tr><th>Date</th><th>Amount</th><th>Dir</th><th>Counterparty</th><th>Country</th><th>Channel</th><th>Purpose</th><th>Risk Indicator</th></tr></thead><tbody>${matches.map(historyRow).join('')}</tbody></table></div>`
+          : `<p class="rationale-note">No individual transactions in the current window match this pattern directly.</p>`;
+      } else {
+        bodyHtml = `<p class="rationale-note">This flag reflects a pattern across the full transaction window or account structure rather than any single transaction. See the reason above, and the SARA.ai Assessment / Transaction Analysis sections for the underlying evidence.</p>`;
+      }
+    }
+    return `<div class="flag-card ${isOpen?'flag-card-open':''}">
+      <div class="flag-light ${f.triggered==='Y'?'on':'off'}"></div>
+      <div style="flex:1">
+        <div class="flag-card-clickable" onclick="toggleRedFlag('${f.key}')" title="Click to see the transactions behind this flag">
+          <div class="flag-name">${f.flag} <span class="flag-expand-hint">${isOpen?'▾':'▸'} ${matcher ? 'view transactions' : 'view detail'}</span></div>
+          <div class="flag-reason">${f.reason}</div>
+          <div class="flag-weight">weight ${f.weight}</div>
+        </div>
+        ${isOpen ? `<div class="flag-drilldown">${bodyHtml}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="flag-grid">${cards}</div>`;
+}
+
+function buildRecommendation(a, inv){
+  const dec = inv.ai_l1_decision;
+  if(dec.requires_human_review){
+    const reasons = dec.review_reasons.map(r=>`<li>${r}</li>`).join('');
+    return `
+      <div class="rec-banner rec-Need">
+        <div class="rec-icon">🧑‍⚖️</div>
+        <div>
+          <div class="rec-decision">Requires Human Review — SARA.ai did not decide autonomously</div>
+          <div class="rec-sub">Red-flag weight: ${dec.red_flag_weight_total} · Max SARA.ai confidence: ${dec.max_ai_confidence_score}</div>
+        </div>
+      </div>
+      <div class="subhead">Why this was flagged as contradictory</div>
+      <ul class="rec-reasons">${reasons}</ul>
+      <p class="rationale-note">${dec.decision_summary} A human L1 analyst must choose one of the two available outcomes in the panel below — there is no "request more information" outcome at L1.</p>`;
+  }
+  const cls = AI_DECISION_CLASS_MAP[dec.final_action] || 'rec-Need';
+  const icon = AI_DECISION_ICON_MAP[dec.final_action] || '❔';
+  return `
+    <div class="rec-banner ${cls}">
+      <div class="rec-icon">${icon}</div>
+      <div>
+        <div class="rec-decision">SARA.ai Autonomous Decision: ${DECISION_LABELS[dec.final_action] || dec.final_action}</div>
+        <div class="rec-sub">Red-flag weight: ${dec.red_flag_weight_total} · Max SARA.ai confidence: ${dec.max_ai_confidence_score}</div>
+      </div>
+    </div>
+    <div class="subhead">Why SARA.ai reached this decision</div>
+    <p class="rationale-note">${dec.decision_summary}</p>
+    <p class="rationale-note">No contradictory signals were detected, so this case was decided end-to-end by SARA.ai without human involvement. It is logged separately in the SARA.ai autonomous-decision audit trail (not the human L1 audit trail) — see Case Audit Trail below.</p>`;
+}
+
+const DECISION_RATIONALE_OPTIONS = [
+  "Transaction pattern consistent with customer profile — false positive",
+  "KYC/CDD documentation confirms legitimate source of funds/wealth",
+  "Screening hit(s) reviewed and confirmed as false match",
+  "Insufficient information — additional documentation requested from customer/RM",
+  "Structuring/layering pattern confirmed — escalating for SAR review",
+  "Cumulative red-flag weight exceeds risk appetite — recommend SAR filing",
+  "Customer risk profile and transaction behavior misaligned — referring to L2",
+  "Prior investigation history supports current disposition",
+];
+
+function buildAnalystFeedbackPanel(a, inv, decided){
+  const dec = inv.ai_l1_decision;
+  const humanNeeded = dec.requires_human_review || overrideMode;
+
+  if(!humanNeeded){
+    // AI decided autonomously and no one has chosen to override it. The decision itself is
+    // already computed, but it's only written to the audit log once "Submit Decision" is
+    // clicked -- showSaveFilePicker() requires a real user gesture, and a submit step also
+    // gives the analyst an explicit moment to see the decision before it's logged.
+    const submitStatus = autonomousSubmitStatus[a.alert_id];
+    const submitted = submitStatus && submitStatus !== 'error';
+    const submitError = submitStatus === 'error';
+
+    const bannerHtml = submitted
+      ? `<div class="decision-locked-banner">✓ Submitted — logged to <b>${submitStatus.file}</b> at ${submitStatus.timestamp}. <button type="button" class="amend-link" onclick="toggleOverride()">Override as human analyst</button></div>`
+      : `<div class="decision-locked-banner">
+          🤖 SARA.ai decided <b>${DECISION_LABELS[dec.final_action] || dec.final_action}</b> without human involvement — no contradictory signals were detected.
+          <button type="button" class="amend-link" onclick="toggleOverride()">Override as human analyst</button>
+        </div>`;
+
+    return `<div class="panel" id="analystFeedbackPanel">
+      <h2>L1 Disposition — Decided Autonomously by SARA.ai</h2>
+      ${bannerHtml}
+      <p class="rationale-note">${dec.decision_summary}</p>
+      ${submitError ? `<p class="rationale-note" style="color:var(--red)">The audit log write didn't complete (file picker cancelled, or a write error). Click Submit again to retry.</p>` : ''}
+      <div style="margin-top:14px">
+        <button class="btn submit-btn" onclick="submitAutonomousDecision()" ${submitted?'disabled':''}>${submitted ? 'Submitted' : (submitError ? 'Retry Submit' : 'Submit Decision')}</button>
+      </div>
+    </div>`;
+  }
+
+  const locked = !!decided && stagedAction===null;      // submitted, not currently being amended
+  const amending = !!decided && stagedAction!==null;     // submitted before, re-opened via "Amend decision"
+  const activeAction = stagedAction!==null ? stagedAction : (decided ? decided.action : null);
+  const currentNote = stagedAction!==null ? draftNote : (decided?.note || '');
+  const currentNarrative = stagedAction!==null ? draftNarrative : (decided?.narrative || '');
+
+  const optsHtml = DECISION_RATIONALE_OPTIONS.map(o=>`<option value="${o}" ${currentNote===o?'selected':''}>${o}</option>`).join('');
+
+  const btn = (action, cls, label) =>
+    `<button class="btn ${cls} ${activeAction===action?'active-choice':''}" ${locked?'disabled':''} onclick="stage('${action}')">${label}</button>`;
+
+  const priorHistoryHtml = (decided && decided.history && decided.history.length) ? `
+    <div class="prior-decisions">
+      <div class="subhead" style="margin-top:16px">Decision history (${decided.history.length} prior submission${decided.history.length>1?'s':''})</div>
+      ${decided.history.map(h=>`<div class="log-entry"><b>${h.action.replace(/_/g,' ')}</b> at ${h.timestamp}${h.note?' — "'+h.note+'"':''}</div>`).join('')}
+    </div>` : '';
+
+  const contextNote = dec.requires_human_review
+    ? `SARA.ai flagged this case as contradictory and did not decide autonomously — see the reasons in the Recommended Decision section above. A human L1 analyst must choose one of the two outcomes below.`
+    : `You are overriding an AI autonomous decision (originally <b>${DECISION_LABELS[dec.final_action] || dec.final_action}</b> by SARA.ai). Record your own decision and rationale below.`;
+
+  return `<div class="panel" id="analystFeedbackPanel">
+    <h2>L1 Analyst Feedback &amp; Disposition (human-in-the-loop)</h2>
+    <p class="rationale-note" style="margin-bottom:12px">${contextNote} L1 has exactly two outcomes — there is no "request more information" tier.</p>
+
+    ${locked ? `<div class="decision-locked-banner">✓ Decision submitted — <b>${decided.action.replace(/_/g,' ')}</b> at ${decided.timestamp}. <button type="button" class="amend-link" onclick="amendDecision()">Amend decision</button></div>` : ''}
+    ${amending ? `<div class="decision-amend-banner">Amending the previous decision (originally <b>${decided.action.replace(/_/g,' ')}</b> at ${decided.timestamp}). Submitting will record this as an amendment and keep the prior decision in the audit trail.</div>` : ''}
+
+    <div class="decision-row">
+      ${btn('close_false_positive','close','Close — False Positive')}
+      ${btn('escalate_to_l2','escalate','Escalate to L2 / SAR Review')}
+    </div>
+
+    <label class="field-label">Analyst Rationale</label>
+    <select id="noteBox" class="decision-rationale" ${locked?'disabled':''}>
+      <option value="" ${!currentNote?'selected':''} disabled>Select a rationale — mandatory when closing as false positive or overriding the SARA.ai decision</option>
+      ${optsHtml}
+    </select>
+
+    <label class="field-label">Case Narrative (free text)${activeAction==='escalate_to_l2' ? ' — <span style="color:var(--red)">required for escalation</span>' : ' — <span style="color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500">optional, recommended for the case file</span>'}</label>
+    <textarea id="narrativeBox" class="narrative-box" ${locked?'disabled':''} placeholder="Describe the transaction pattern, evidence reviewed, and basis for this disposition in your own words.">${currentNarrative}</textarea>
+
+    <div style="margin-top:14px">
+      <button class="btn submit-btn" onclick="submitDecision()" ${stagedAction===null?'disabled':''}>${amending?'Submit amendment':'Submit decision'}</button>
+    </div>
+
+    <div id="logArea" style="margin-top:14px">${decided ? `<div class="log-entry"><b>${decided.action.replace(/_/g,' ')}</b> by L1 Analyst (demo) at ${decided.timestamp}${decided.note? ' — "'+decided.note+'"':''}${decided.override? ' <span style="color:var(--amber)">[override of AI decision]</span>':''}${decided.amended? ' <span style="color:var(--accent)">[amended]</span>':''}${decided.narrative? '<br><span style="color:var(--ink-soft)">Narrative: '+decided.narrative+'</span>':''}</div>` : '<div class="log-empty">No decision recorded yet for this alert.</div>'}</div>
+    ${priorHistoryHtml}
+  </div>`;
+}
+
+const NOTE_OPTIONS = {
+  summary: ["Consistent with customer's expected profile","Minor deviation from expected profile","Moderate deviation — warrants review","Significant deviation — potential suspicious activity","Insufficient information to assess"],
+  observations: ["KYC/CDD documentation is current and consistent","KYC/CDD documentation is expired or incomplete","Transaction pattern consistent with stated occupation/income","Transaction pattern inconsistent with stated occupation/income","Screening returned no adverse matches","Screening returned adverse matches requiring review","Prior AML history on file for this customer/account","No prior AML history on file"],
+  evidence: ["Rule-engine evidence (transaction thresholds/timing) only","KYC/CDD documentation on file","Screening hit report (PEP/Sanctions)","Adverse media / OSINT article(s)","Prior investigation case file","Account/transaction history export"],
+  decision: ["Close — False Positive","Escalate to L2 / SAR Review","File Suspicious Activity Report (SAR)","No Action — Continue Monitoring"],
+  recommendation: ["No further action required","Continue monitoring — no change to risk rating","Request additional documentation from customer","Refer to compliance for enhanced due diligence (EDD)","Escalate to L2/SAR review team","Update customer risk rating"],
+};
+const NOTE_LABELS = {summary:'Summary', observations:'Observations', evidence:'Supporting Evidence', decision:'Decision', recommendation:'Recommendation', additional_notes:'Additional Notes'};
+function buildNotes(a){
+  const n = getNotes(a.alert_id);
+  const field = (key)=>{
+    const opts = NOTE_OPTIONS[key].map(o=>`<option value="${o}" ${n[key]===o?'selected':''}>${o}</option>`).join('');
+    return `<div class="notes-field"><label>${NOTE_LABELS[key]}</label>
+      <select onchange="updateNote('${a.alert_id}','${key}',this.value)">
+        <option value="" ${!n[key]?'selected':''} disabled>Select…</option>
+        ${opts}
+      </select>
+    </div>`;
+  };
+  const freeTextField = `<div class="notes-field" style="grid-column:1 / -1">
+    <label>${NOTE_LABELS.additional_notes}</label>
+    <textarea rows="4" placeholder="Add any additional context, rationale, or observations not covered above…"
+      onchange="updateNote('${a.alert_id}','additional_notes',this.value)">${n.additional_notes || ''}</textarea>
+  </div>`;
+  return `<div class="notes-grid">
+    ${field('summary')}
+    ${field('observations')}
+    ${field('evidence')}
+    ${field('decision')}
+    ${field('recommendation')}
+    ${freeTextField}
+  </div>`;
+}
+
+function buildAuditTrail(a, inv, decided){
+  const events = [...inv.audit_trail];
+  if(decided){
+    events.push({time: decided.timestamp, user:'L1 Analyst (demo)', action: decided.action.replace(/_/g,' '), comments: decided.note || '(no note provided)'});
+  }
+  const items = events.map(e=>`<div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-time">${e.time}</div>
+    <div class="tl-action">${e.action}</div>
+    <div class="tl-meta"><span class="tl-user">${e.user}</span> — ${e.comments}</div>
+  </div>`).join('');
+  return `<div class="timeline">${items}</div>`;
+}
+
+const LC_ORDER = ['L1_REVIEW','L1_QC','L2_REVIEW','L2_QC','MLRO_L3','MLRO_DECISION'];
+const LC_SHORT = {L1_REVIEW:'L1', L1_QC:'QC·L1', L2_REVIEW:'L2', L2_QC:'QC·L2', MLRO_L3:'L3', MLRO_DECISION:'MLRO'};
+
+function buildCaseLifecycle(inv){
+  const wf = inv.case_workflow;
+  if(!wf){ return `<div class="lc-narr">No lifecycle data available for this case.</div>`; }
+  const completed = new Set(wf.stages_completed);
+  const current = wf.current_stage;
+
+  // top rail
+  const rail = LC_ORDER.map(st=>{
+    const stg = wf.stages.find(s=>s.stage===st);
+    let cls = 'skipped';
+    if(stg){
+      if(st===current) cls = (stg.hitl && stg.hitl.blocking) ? 'current blocked' : 'current';
+      else cls = 'done';
+    }
+    const label = STAGE_LABELS_JS[st] || st;
+    return `<div class="lc-node ${cls}">
+      <div class="lc-dot">${LC_SHORT[st]}</div>
+      <div class="lc-name">${label}</div>
+      <div class="lc-role">${STAGE_ROLE_JS[st]||''}</div>
+    </div>`;
+  }).join('');
+
+  // per-stage cards
+  const cards = wf.stages.map(s=>{
+    const h = s.hitl;
+    const blocking = h && h.blocking;
+    const cardCls = blocking ? 'blocking' : 'autonomous';
+    const aiBadge = `<span class="lc-badge ai">AI: ${s.ai_action_label}</span>`;
+    const moveBadge = blocking
+      ? `<span class="lc-badge blocking">Held for human sign-off</span>`
+      : `<span class="lc-badge auto">AI advanced autonomously</span>`;
+    const hitlCls = h.status==='Overridden' ? 'hitl-overridden' : 'hitl-confirmed';
+    const hitlBadge = `<span class="lc-badge ${hitlCls}">HITL: ${h.status}</span>`;
+    const effective = s.effective_action_label && s.effective_action_label!==s.ai_action_label
+      ? `<div class="lc-narr"><b>Final disposition after human review:</b> ${s.effective_action_label}</div>` : '';
+    const reasons = (s.review_reasons && s.review_reasons.length)
+      ? `<div class="lc-reasons"><b>Why held for review:</b> ${s.review_reasons.join(' ')}</div>` : '';
+    const checklist = `<div class="lc-checklist">${s.checklist.map(c=>`<div class="lc-check">${c}</div>`).join('')}</div>`;
+
+    let intel = '';
+    if(s.intelligence){
+      const i = s.intelligence;
+      intel = `<div class="lc-intel">
+        <div><span>Source of funds:</span> ${i.source_of_funds}</div>
+        <div><span>Source of wealth:</span> ${i.source_of_wealth}</div>
+        <div><span>Geographic risk:</span> ${i.geographic_risk}</div>
+        <div><span>Typology match:</span> ${i.typology_match}</div>
+        <div><span>Fraud indicators:</span> ${i.fraud_indicators}</div>
+        <div><span>Recalculated risk:</span> ${i.recalculated_risk_score}</div>
+      </div>`;
+    }
+    let sar = '';
+    if(s.sar){
+      const x = s.sar;
+      sar = `<div class="lc-sar">
+        <b>${x.filed ? 'SAR/STR FILED' : 'No SAR filed'}</b>${x.sar_reference?` · Ref ${x.sar_reference}`:''}${x.regulator?` · ${x.regulator}`:''}<br>
+        <span style="color:var(--muted)">${x.narrative}</span>
+      </div>`;
+    }
+    return `<div class="lc-stage-card ${cardCls}">
+      <div class="lc-stage-head">
+        <div class="lc-stage-title">${s.label} <span style="font-weight:500;color:var(--muted)">· ${s.role}</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${aiBadge}${moveBadge}${hitlBadge}</div>
+      </div>
+      <div class="lc-narr">${s.ai_narrative}</div>
+      ${effective}
+      ${reasons}
+      <div class="lc-hitl"><b>Human sign-off:</b> ${h.human_name} (${h.human_role}) — ${h.status} at ${h.signed_off_at}. ${h.note}</div>
+      ${intel}${sar}
+      <details style="margin-top:8px"><summary style="cursor:pointer;font-size:11px;color:var(--muted)">Stage checklist (${s.checklist.length} steps)</summary>${checklist}</details>
+    </div>`;
+  }).join('');
+
+  const cat = wf.risk_category ? ` · Risk category: <b>${wf.risk_category}</b>` : '';
+  return `<div>
+    <div style="margin-bottom:10px;font-size:12px;color:var(--muted)">
+      Case outcome: <span class="lc-outcome-pill">${wf.outcome}</span>${cat}
+    </div>
+    <div class="lifecycle-rail">${rail}</div>
+    ${cards}
+  </div>`;
+}
+
+function buildSla(inv){
+  const s = inv.sla;
+  const fillClass = s.status==='Breached' ? 'sla-fill-bad' : s.status==='Near Breach' ? 'sla-fill-warn' : 'sla-fill-ok';
+  return `<div class="sla-row">
+    <div class="sla-stat"><div class="sv">${s.days_open}</div><div class="sl">Days Open</div></div>
+    <div class="sla-stat"><div class="sv">${s.sla_target_days}</div><div class="sl">SLA Target (days)</div></div>
+    <div class="sla-stat"><div class="sv">${s.remaining_days}</div><div class="sl">Remaining</div></div>
+    <div class="sla-bar-wrap">
+      <div class="sla-bar"><div class="sla-bar-fill ${fillClass}" style="width:${s.progress_percent}%"></div></div>
+      <div style="margin-top:8px"><span class="sla-status-pill sla-${s.status.replace(/\s+/g,'-')}">${s.status}</span></div>
+    </div>
+  </div>`;
+}
+
+// The ordered section catalogue for the investigation workspace. Each entry:
+//   [id, icon, navLabel, barTitle, flagFn(a,inv,decided)->html|'', bodyFn(a,inv,decided)->html, navGroup]
+// Existing builder functions are reused verbatim; only the presentation changes
+// from one long accordion to one-section-at-a-time panes with a left nav.
+function invSectionCatalogue(a, inv, decided){
+  return [
+    ['overview','🏠','Overview','Case Overview', ()=>'', ()=>buildOverviewPane(a,inv,decided), 'Case'],
+    ['risk','👤','Customer Profile','Customer Risk Snapshot', ()=>'', ()=>buildRiskSnapshot(inv), 'Customer'],
+    ['kyc','🪪','KYC / CDD','KYC / CDD', ()=>flagPill(inv.kyc.edd_required==='Y', inv.kyc.edd_required==='Y'?'EDD':'Standard'), ()=>buildKyc(inv), 'Customer'],
+    ['entity','🌍','Entity / Jurisdiction','User / Entity', ()=>flagPill(inv.user_entity.jurisdiction_mismatch==='Y','Jurisdiction mismatch'), ()=>buildUserEntity(inv), 'Customer'],
+    ['ubo','🏢','UBO','UBO Details', ()=> inv.ubo ? flagPill(inv.ubo.shareholders.some(s=>s.pep_flag==='Y'||s.sanctions_flag==='Y'),'Review') : `<span class="sec-flag flag-neutral">N/A</span>`, ()=>buildUbo(inv), 'Customer'],
+    ['txn','💳','Transactions','Transaction Analysis', ()=>'', ()=>buildTransactionAnalysis(inv, a.alert_id), 'Activity'],
+    ['hist','📊','Historical Behaviour','Historical Behaviour (Expected vs Actual)', ()=>flagPill(inv.historical_behaviour.deviation_flags.length>0), ()=>buildHistoricalBehaviour(inv), 'Activity'],
+    ['ops','🔐','Account Operations','Account Operations', ()=>flagPill(inv.account_operations.anomalous_login_count>0, `${inv.account_operations.anomalous_login_count} anomalous`), ()=>buildAccountOperations(inv), 'Activity'],
+    ['ai','🤖','Alert & Rule Detail','SARA.ai Assessment', ()=>'', ()=>buildAiCopilotSection(a), 'Detection'],
+    ['flags','🚦','Risk Indicators','Risk Indicators (Red Flag Analysis)', ()=>flagPill(inv.red_flags.some(f=>f.triggered==='Y'), `${inv.red_flags.filter(f=>f.triggered==='Y').length} triggered`), ()=>buildRedFlags(inv), 'Detection'],
+    ['aml','🗂️','AML History','AML History', ()=>flagPill(inv.aml_history.history_available==='Y'||inv.aml_history.sar_raised==='Y', inv.aml_history.sar_raised==='Y'?'SAR on file':undefined), ()=>buildAmlHistory(inv), 'Screening'],
+    ['pep','🏛️','PEP Screening','PEP Screening', ()=>flagPill(inv.pep_screening.pep_flag==='Y'), ()=>buildPep(inv), 'Screening'],
+    ['sanc','🚫','Sanctions','Sanctions Screening', ()=>flagPill(inv.sanctions_screening.sanctions_match==='Y'), ()=>buildSanctions(inv), 'Screening'],
+    ['osint','📰','OSINT / Negative News','OSINT / Adverse Media', ()=>flagPill(inv.osint.negative_news==='Y'), ()=>buildOsint(inv), 'Screening'],
+    ['rec','🧭','AI Recommendation','Recommended Decision', ()=> inv.ai_l1_decision.requires_human_review ? `<span class="sec-flag flag-warn">Human review required</span>` : `<span class="sec-flag flag-neutral">AI: ${DECISION_LABELS[inv.ai_l1_decision.final_action]||inv.ai_l1_decision.final_action}</span>`, ()=>buildRecommendation(a, inv), 'Outcome'],
+    ['decision','⚖️','Decision','Disposition & Decision', ()=>'', ()=>buildDecisionPane(a,inv,decided), 'Outcome'],
+    ['lifecycle','🔀','Case Lifecycle','Case Lifecycle (L1 → L2 → L3 → MLRO)', ()=> inv.case_workflow ? `<span class="sec-flag flag-neutral">${inv.case_workflow.current_stage_label}${inv.case_workflow.sar_filed?' · SAR filed':''}</span>` : '', ()=>buildCaseLifecycle(inv), 'Outcome'],
+    ['notes','📝','Case Notes','Investigation Notes', ()=>'', ()=>buildNotes(a), 'Record'],
+    ['audit','🕓','Audit Trail','Case Audit Trail', ()=>'', ()=>buildAuditTrail(a, inv, decided), 'Record'],
+    ['sla','⏱️','SLA Tracker','SLA Tracker', ()=>`<span class="sla-status-pill sla-${inv.sla.status.replace(/\s+/g,'-')}" style="margin-left:10px">${inv.sla.status}</span>`, ()=>buildSla(inv), 'Record'],
+  ];
+}
+
+let activeSection = 'overview';
+
+// Overview pane = the workflow tracker + the alert summary (was rendered at the
+// top of the old single page). Gives the analyst an at-a-glance case header.
+function buildOverviewPane(a, inv, decided){
+  return `${buildWorkflowTracker(a, inv, decided)}${buildAlertSummary(a, inv, decided)}`;
+}
+// Decision pane = the human-in-the-loop disposition controls (unchanged logic).
+function buildDecisionPane(a, inv, decided){
+  return buildAnalystFeedbackPanel(a, inv, decided);
+}
+
+function renderMain(_preserve){
+  const a = ALERTS.find(x=>x.alert_id===selectedId);
+  const main = document.getElementById('mainPanel');
+  if(!a){ main.innerHTML = `<div class="empty-state">Select an alert.</div>`; return; }
+  const inv = INV_DATA[a.customer_id];
+  const decided = decisions[a.alert_id];
+  if(!inv){ main.innerHTML = `<div class="empty-state">No investigation data available for this customer.</div>`; return; }
+
+  const cat = invSectionCatalogue(a, inv, decided);
+  if(!cat.some(s=>s[0]===activeSection)) activeSection='overview';
+  // render every section body into its own pane; show only the active one.
+  main.innerHTML = cat.map(([id])=>{
+    const sec = cat.find(s=>s[0]===id);
+    return `<div class="sec-pane" id="pane-${id}" style="display:${id===activeSection?'block':'none'}">${sec[5]()}</div>`;
+  }).join('');
+
+  // keep the left nav + content bar in step with any state change
+  if(document.getElementById('investigationView').style.display!=='none'){
+    buildInvNav();
+    const idx=cat.findIndex(s=>s[0]===activeSection); const sec=cat[idx];
+    const bar=document.getElementById('invContentBar');
+    if(bar && sec){ bar.innerHTML=`
+      <div><div class="inv-cb-title">${sec[1]} ${sec[3]}</div><div class="inv-cb-sub">Section ${idx+1} of ${cat.length} · ${sec[6]}</div></div>
+      <div class="inv-cb-nav">
+        <button ${idx===0?'disabled':''} onclick="showSectionByIndex(${idx-1})">← Prev</button>
+        <button ${idx===cat.length-1?'disabled':''} onclick="showSectionByIndex(${idx+1})">Next →</button>
+      </div>`; }
+  }
+  // charts live in the Transactions pane; (re)draw when it is visible
+  if(activeSection==='txn'){ renderCharts(inv, a.alert_id); renderPivot(inv, a.alert_id); }
+}
+
+// Build the left navigation from the same catalogue, grouped.
+function buildInvNav(){
+  const a = ALERTS.find(x=>x.alert_id===selectedId); if(!a) return;
+  const inv = INV_DATA[a.customer_id]; const decided = decisions[a.alert_id];
+  const cat = invSectionCatalogue(a, inv, decided);
+  const ai=a.ai_copilot; const prio=(PRIORITY_MAP(ai.confidence_score)||'').toLowerCase();
+
+  document.getElementById('invNavCaseHdr').innerHTML = `
+    <div class="cn">${a.customer_name}</div>
+    <div class="ci">${a.alert_id} · ${a.customer_id}</div>
+    <div class="cflags">
+      <span class="pill pill-risk-${a.customer_risk_rating}">${a.customer_risk_rating}</span>
+      <span class="pill pill-${prio}">${prio}</span>
+      <span class="pill" style="background:var(--navy);color:#fff">Score ${ai.confidence_score}</span>
+    </div>`;
+
+  const groups=[];
+  cat.forEach(sec=>{ const g=sec[6]; if(!groups.includes(g)) groups.push(g); });
+  let html='';
+  groups.forEach(g=>{
+    html+=`<div class="inv-nav-group">${g}</div>`;
+    cat.filter(s=>s[6]===g).forEach(([id,icon,nav,bar,flagFn])=>{
+      const flag=flagFn();
+      const dot = /flag-warn|flag-alert|flag-bad|Human review|EDD|mismatch|SAR on file|anomalous|triggered/i.test(flag||'') && !/N\/A|Standard|flag-neutral/.test(flag||'')
+        ? `<span class="dot ${/warn/i.test(flag)?'warn':''}"></span>` : '';
+      html+=`<div class="inv-nav-item ${id===activeSection?'active':''}" id="nav-${id}" onclick="showSection('${id}')" title="${nav}">
+        <span class="ic">${icon}</span><span class="lbl">${nav}</span>${dot}</div>`;
+    });
+  });
+  document.getElementById('invNavList').innerHTML=html;
+}
+
+function showSection(id){
+  activeSection=id;
+  const a = ALERTS.find(x=>x.alert_id===selectedId); if(!a) return;
+  const inv = INV_DATA[a.customer_id]; const decided=decisions[a.alert_id];
+  const cat = invSectionCatalogue(a, inv, decided);
+  const sec = cat.find(s=>s[0]===id) || cat[0];
+
+  // toggle panes
+  cat.forEach(([sid])=>{ const p=document.getElementById('pane-'+sid); if(p) p.style.display = sid===id?'block':'none'; });
+  // nav active state
+  document.querySelectorAll('.inv-nav-item').forEach(n=>n.classList.remove('active'));
+  const nav=document.getElementById('nav-'+id); if(nav) nav.classList.add('active');
+
+  // content bar (title + prev/next)
+  const idx=cat.findIndex(s=>s[0]===id);
+  document.getElementById('invContentBar').innerHTML=`
+    <div><div class="inv-cb-title">${sec[1]} ${sec[3]}</div><div class="inv-cb-sub">Section ${idx+1} of ${cat.length} · ${sec[6]}</div></div>
+    <div class="inv-cb-nav">
+      <button ${idx===0?'disabled':''} onclick="showSectionByIndex(${idx-1})">← Prev</button>
+      <button ${idx===cat.length-1?'disabled':''} onclick="showSectionByIndex(${idx+1})">Next →</button>
+    </div>`;
+
+  // charts must (re)draw when Transactions becomes visible (canvas needs layout)
+  if(id==='txn'){ renderCharts(inv, a.alert_id); renderPivot(inv, a.alert_id); }
+  document.querySelector('.inv-content').scrollTop=0;
+  // collapse mobile nav after selection
+  const n=document.getElementById('invNav'); if(n.classList.contains('expanded')) n.classList.remove('expanded');
+}
+function showSectionByIndex(i){
+  const a = ALERTS.find(x=>x.alert_id===selectedId); if(!a) return;
+  const inv = INV_DATA[a.customer_id]; const decided=decisions[a.alert_id];
+  const cat = invSectionCatalogue(a, inv, decided);
+  if(i>=0 && i<cat.length) showSection(cat[i][0]);
+}
+
+const AUTONOMOUS_AUDIT_HEADERS = ['alert_id','customer_id','customer_name','customer_risk_rating','customer_country',
+                                    'rules_triggered','ai_base_score','ai_confidence_score','red_flag_weight_total',
+                                    'final_action','decision_summary','decided_at'];
+let autonomousFileHandle = null;
+const autonomousFsaSupported = 'showSaveFilePicker' in window;
+const autonomousRowsForFallbackDownload = [];
+
+function autonomousRowFor(a, inv){
+  const ai = a.ai_copilot;
+  const dec = inv.ai_l1_decision;
+  const ruleList = a.rules_triggered.map(r=>r.rule_id).join('; ');
+  return [
+    a.alert_id, a.customer_id, a.customer_name, a.customer_risk_rating, a.customer_country,
+    ruleList, ai.base_score, ai.confidence_score, dec.red_flag_weight_total,
+    dec.final_action, dec.decision_summary, new Date().toISOString().slice(0,19).replace('T',' ')
+  ].map(csvEscape).join(',');
+}
+
+// AI-autonomous decisions are NOT written to L1_Audit_tracker.csv -- that file is the
+// human-in-the-loop audit trail. Autonomous decisions get their own log so it's always
+// clear from the file itself whether a human or the AI made the call, without needing to
+// cross-reference a column. Triggered explicitly by the "Submit Decision" button click --
+// showSaveFilePicker() requires a real user gesture, so this cannot fire automatically.
+const autonomousSubmitStatus = {}; // alert_id -> {timestamp, file} | 'error' | undefined
+async function submitAutonomousDecision(){
+  const a = ALERTS.find(x=>x.alert_id===selectedId);
+  const inv = a ? INV_DATA[a.customer_id] : null;
+  if(!a || !inv) return;
+  const row = autonomousRowFor(a, inv);
+
+  if(autonomousFsaSupported){
+    try{
+      if(!autonomousFileHandle){
+        autonomousFileHandle = await window.showSaveFilePicker({
+          suggestedName: 'AI_Autonomous_Decisions_Log.csv',
+          types: [{ description: 'CSV file', accept: { 'text/csv': ['.csv'] } }],
+        });
+      }
+      const file = await autonomousFileHandle.getFile();
+      const isNewFile = file.size === 0;
+      const writable = await autonomousFileHandle.createWritable({ keepExistingData: true });
+      const text = (isNewFile ? AUTONOMOUS_AUDIT_HEADERS.join(',') + '\n' : '') + row + '\n';
+      await writable.write({ type: 'write', position: file.size, data: text });
+      await writable.close();
+      autonomousDecisionsLogged[a.alert_id] = true;
+      autonomousSubmitStatus[a.alert_id] = { timestamp: new Date().toISOString().slice(0,19).replace('T',' '), file: autonomousFileHandle.name };
+    } catch(err){
+      console.error('Autonomous decision log write failed:', err);
+      autonomousSubmitStatus[a.alert_id] = 'error';
+    }
+  } else {
+    autonomousRowsForFallbackDownload.push(row);
+    const csv = [AUTONOMOUS_AUDIT_HEADERS.join(','), ...autonomousRowsForFallbackDownload].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'AI_Autonomous_Decisions_Log.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    autonomousDecisionsLogged[a.alert_id] = true;
+    autonomousSubmitStatus[a.alert_id] = { timestamp: new Date().toISOString().slice(0,19).replace('T',' '), file: 'AI_Autonomous_Decisions_Log.csv (re-saved)' };
+  }
+  renderMain(true);
+}
+
+function downloadAutonomousLogFallback(){
+  if(!autonomousRowsForFallbackDownload.length) return;
+  const csv = [AUTONOMOUS_AUDIT_HEADERS.join(','), ...autonomousRowsForFallbackDownload].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'AI_Autonomous_Decisions_Log.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+const AUDIT_HEADERS = ['alert_id','customer_id','customer_name','customer_risk_rating','customer_country',
+                        'rules_triggered','ai_base_score','ai_confidence_score','ai_confidence_label',
+                        'ai_suggested_action','analyst_decision','analyst_note','analyst_narrative',
+                        'override_of_ai','amended_decision','decision_timestamp'];
+let auditFileHandle = null;                          // FileSystemFileHandle, once the analyst has linked/created L1_Audit_tracker.csv
+const auditFsaSupported = 'showSaveFilePicker' in window;
+const auditRowsForFallbackDownload = [];              // used only in browsers without the File System Access API
+
+function csvEscape(v){
+  if(v===undefined || v===null) return '';
+  const s = String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+
+function auditRowFor(a, decided){
+  const ai = a.ai_copilot;
+  const ruleList = a.rules_triggered.map(r=>r.rule_id).join('; ');
+  return [
+    a.alert_id, a.customer_id, a.customer_name, a.customer_risk_rating, a.customer_country,
+    ruleList, ai.base_score, ai.confidence_score, ai.confidence_label, ai.suggested_action,
+    decided.action, decided.note, decided.narrative || '', decided.override, decided.amended ? 'Y' : 'N', decided.timestamp
+  ].map(csvEscape).join(',');
+}
+
+function setAuditLinkStatus(text, mode){
+  const el = document.getElementById('auditLinkStatus');
+  const txt = document.getElementById('auditLinkText');
+  if(!el || !txt) return;
+  el.classList.remove('linked','error');
+  if(mode) el.classList.add(mode);
+  txt.textContent = text;
+}
+
+// Writes one audit row straight to a local L1_Audit_tracker.csv on the analyst's machine —
+// no manual export step. The first submitted decision in a session prompts the analyst to
+// pick/create the file (a required user gesture); every decision after that appends to it
+// silently. Browsers without the File System Access API (Firefox, Safari) fall back to
+// re-downloading the same filename with the full audit history each time.
+async function persistAuditRow(a, decided){
+  const row = auditRowFor(a, decided);
+
+  if(auditFsaSupported){
+    try{
+      if(!auditFileHandle){
+        auditFileHandle = await window.showSaveFilePicker({
+          suggestedName: 'L1_Audit_tracker.csv',
+          types: [{ description: 'CSV file', accept: { 'text/csv': ['.csv'] } }],
+        });
+      }
+      const file = await auditFileHandle.getFile();
+      const isNewFile = file.size === 0;
+      const writable = await auditFileHandle.createWritable({ keepExistingData: true });
+      const text = (isNewFile ? AUDIT_HEADERS.join(',') + '\n' : '') + row + '\n';
+      await writable.write({ type: 'write', position: file.size, data: text });
+      await writable.close();
+      setAuditLinkStatus(`Linked — saved to ${auditFileHandle.name}`, 'linked');
+    } catch(err){
+      // Analyst cancelled the file picker, or a write failed — decision is still recorded
+      // in-app either way; just surface that the on-disk copy didn't update this time.
+      console.error('Audit log write failed:', err);
+      setAuditLinkStatus('Audit log not linked — click Close/Escalate/Request info again to retry', 'error');
+    }
+  } else {
+    auditRowsForFallbackDownload.push(row);
+    const csv = [AUDIT_HEADERS.join(','), ...auditRowsForFallbackDownload].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'L1_Audit_tracker.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setAuditLinkStatus('Linked — re-saving L1_Audit_tracker.csv on each decision', 'linked');
+  }
+}
+
+// Stage a disposition choice -- does NOT commit or write to the audit file. Capture
+// whatever the analyst has typed/selected so far so the re-render (which rebuilds the
+// panel's innerHTML) doesn't wipe it out before Submit is clicked.
+function stage(action){
+  const a = ALERTS.find(x=>x.alert_id===selectedId);
+  if(!a) return;
+  const noteEl = document.getElementById('noteBox');
+  const narrEl = document.getElementById('narrativeBox');
+  if(noteEl) draftNote = noteEl.value;
+  if(narrEl) draftNarrative = narrEl.value;
+  stagedAction = action;
+  renderMain(true);
+}
+
+// Re-opens an already-submitted alert for editing. The prior decision is kept (and shown
+// under "Decision history") until the analyst explicitly submits the amendment.
+function amendDecision(){
+  const a = ALERTS.find(x=>x.alert_id===selectedId);
+  const decided = a && decisions[a.alert_id];
+  if(!decided) return;
+  stagedAction = decided.action;
+  draftNote = decided.note || '';
+  draftNarrative = decided.narrative || '';
+  renderMain(true);
+}
+
+function submitDecision(){
+  const a = ALERTS.find(x=>x.alert_id===selectedId);
+  if(!a || stagedAction===null) return;
+  const note = document.getElementById('noteBox').value.trim();
+  const narrative = document.getElementById('narrativeBox').value.trim();
+  const override = stagedAction !== a.ai_copilot.suggested_action;
+
+  if(stagedAction==='close_false_positive' && !note){
+    alert('A rationale is required to close an alert as a false positive. Please select one before submitting.');
+    return;
+  }
+  if(override && !note){
+    alert('A rationale is required when your decision overrides the SARA.ai recommendation. Please select one before submitting.');
+    return;
+  }
+  if(stagedAction==='escalate_to_l2' && !narrative){
+    alert('A case narrative is required when escalating to L2 / SAR review. Please describe the basis for escalation before submitting.');
+    return;
+  }
+
+  const prior = decisions[a.alert_id];
+  const history = prior ? [...(prior.history||[]), {action:prior.action, note:prior.note, narrative:prior.narrative, override:prior.override, timestamp:prior.timestamp}] : [];
+
+  decisions[a.alert_id] = {
+    action: stagedAction, note, narrative, override,
+    amended: !!prior, history,
+    timestamp: new Date().toISOString().slice(0,19).replace('T',' '),
+  };
+  stagedAction = null;
+  draftNote = '';
+  draftNarrative = '';
+  saveDecisionsToStorage();
+  renderQueue();
+  renderMain();
+  persistAuditRow(a, decisions[a.alert_id]);
+}
+
+// Force every accordion section open so the printed/PDF case packet includes the full
+// investigation record, then restore whichever sections were collapsed beforehand.
+let printForcedOpenEls = [];
+function printCasePacket(){
+  printForcedOpenEls = [];
+  document.querySelectorAll('#invAccordion .accordion-collapse').forEach(el=>{
+    if(!el.classList.contains('show')){
+      el.classList.add('show');
+      printForcedOpenEls.push(el);
+    }
+  });
+  window.print();
+}
+window.addEventListener('afterprint', ()=>{
+  printForcedOpenEls.forEach(el=>el.classList.remove('show'));
+  printForcedOpenEls = [];
+});
+
+loadDecisionsFromStorage();
+// The app now boots into the login gate. Workspace/Case-Management rendering
+// happens after a successful doLogin(). Stat strip / queue / main are rendered
+// by applyTab() once a role is chosen.
+document.getElementById('loginUser').focus();
+</script>
+</body>
+</html>
